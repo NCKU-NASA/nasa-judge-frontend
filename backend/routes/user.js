@@ -1,14 +1,17 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const User = require('../models/user');
+const router = express.Router();
 
-/* GET users listing. */
 router.post('/login', function(req, res, next) {
   if (req.body.username === 'a' && req.body.password === 'b') {
-    res.send('respond with a resource');
+    res.send('Login success');
   }
   else {
     res.sendStatus(401);
   }
+});
+
+router.get('/config', async function(req, res, next) {
 });
 
 module.exports = router;

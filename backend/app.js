@@ -2,15 +2,12 @@ require('./utils/config').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const db = require('./utils/database');
-const logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 
 var app = express();
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));

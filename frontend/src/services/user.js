@@ -1,16 +1,21 @@
 import axios from '@/plugins/axios.js';
 
-const login = (username, password) => {
+const login = (studentId, password) => {
   return axios.post('/user/login', {
-    username,
+    studentId,
     password
   }).then((res) => {
-    if (res.status === 200) {
-      return true;
-    }
-    return false;
+    console.log(res);
+    return {
+      status: res.status,
+      data: res.data,
+    };
   }).catch((err) => {
-    console.error(err);
+    console.log(err);
+    return {
+      status: err.response.status,
+      data: err.response.data,
+    };
   });
 }
 

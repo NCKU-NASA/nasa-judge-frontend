@@ -5,12 +5,12 @@
       type='error'
       :value='loginError'
     >
-      Username or password incorrect
+      {{ message }}
     </v-alert>
     <form class='login-form'>
       <v-text-field
         label='Student ID'
-        v-model='username'
+        v-model='studentId'
         @keyup.enter='login'
       ></v-text-field>
       <v-text-field 
@@ -33,18 +33,22 @@ import userService from '@/services/user';
 export default {
   name: 'Login',
   data: () => ({
-    username: '',
+    studentId: '',
     password: '',
     loginError: false,
+    message: ''
   }),
   methods: {
     login: async function() {
-      if(await userService.login(this.username, this.password)) {
-        this.loginError = false;
-        console.log('login success');
-      }
-      else {
-        this.loginError = true;
+      const result = await userService.login(this.studentId, this.password);
+      switch (result.status) {
+        case 200:
+          this.loginError = false;
+          this.$router.push('/lab');
+          break;
+        default:
+          this.loginError = true;
+          this.message = result.data;
       }
     }
   }

@@ -16,20 +16,20 @@ function isExists() {
 isExists().then((result) => {
   if (!result) {
     con.query('CREATE TABLE ?? (\
-      student_id varchar(255) PRIMARY KEY,\
+      studentId varchar(255) PRIMARY KEY,\
       password varchar(255),\
-      config_path varchar(255)\
+      configPath varchar(255)\
     )', [table_name]);
   }
 });
 
-function getUser(student_id) {
-  if (!student_id) {
+function getUser(studentId) {
+  if (!studentId) {
     return false;
   }
   return new Promise((resolve, reject) => {
-    con.query('SELECT * FROM ?? WHERE student_id=?'
-      , [table_name, student_id], (err, result) => {
+    con.query('SELECT * FROM ?? WHERE studentId=?'
+      , [table_name, studentId], (err, result) => {
       if (err) {
         reject(err);
       }

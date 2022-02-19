@@ -5,13 +5,11 @@ const login = (studentId, password) => {
     studentId,
     password
   }).then((res) => {
-    console.log(res);
     return {
       status: res.status,
       data: res.data,
     };
   }).catch((err) => {
-    console.log(err);
     return {
       status: err.response.status,
       data: err.response.data,

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
-import Lab from '../components/Lab.vue'
+import Lab from '../views/Lab.vue'
 
 Vue.use(VueRouter)
 

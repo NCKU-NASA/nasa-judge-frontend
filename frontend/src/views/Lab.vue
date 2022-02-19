@@ -47,24 +47,17 @@
         Judge
       </v-btn>
     </div>
-    <div class="file-ops-list">
-      <div v-for="(fileOps, i) in selectedLab.contents" :key="i">
-        <div v-if="fileOps.type === 'download'">
-          <Download
-            :req-dest="fileOps.link"
-            :file-type="fileOps.text"
-          />
-        </div>
-        <div v-else-if="fileOps.type === 'upload'">
-          <Upload
-            :file-id="fileOps.id"
-            :file-type="fileOps.text"
-            @file-uploaded="onUploadFileChange"
-          />
-        </div>
-        <div v-else>
-          <v-alert type="error">Unknown Action</v-alert>
-        </div>
+    <div class="file-ops">
+      <div v-if="isNotEmpty(selectedLab.downloads)">
+        <Download
+          :downloads="selectedLab.downloads"
+        />
+      </div>
+      <div v-if="isNotEmpty(selectedLab.uploads)">
+        <Upload
+          :uploads="selectedLab.uploads"
+          @file-uploaded="onUploadFileChange"
+        />
       </div>
     </div>
   </div>
@@ -74,7 +67,7 @@
 import labService from '@/services/lab';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
-import { isEmpty } from '@/helpers/helper';
+import { isEmpty, isNotEmpty } from '@/helpers/helper';
 
 export default {
   name: 'Lab',
@@ -134,29 +127,34 @@ export default {
     },
     // put the uploaded file into corresponding content obj
     onUploadFileChange({ id, file }) {
-      let contentIndex = this.selectedLab.contents.findIndex(content => content.id === id);
+      let contentIndex = this.selectedLab.uploads.findIndex(content => content.id === id);
 
       // this.selectedLab.contents[i] cannot trigger watcher
-      this.$set(this.selectedLab.contents, contentIndex, {
-        ...this.selectedLab.contents[contentIndex],
+      this.$set(this.selectedLab.uploads, contentIndex, {
+        ...this.selectedLab.uploads[contentIndex],
         file,
       })
+    },
+    isNotEmpty(val) {
+      return isNotEmpty(val);
     }
   },
   watch: {
-    'selectedLab.contents': {
+    'selectedLab.uploads': {
       handler: function () {
-        if (isEmpty(this.selectedLab.contents)) {
+        console.log('watch selectedLab.uploads')
+        console.log(this.selectedLab.uploads)
+        if (isEmpty(this.selectedLab.uploads)) {
           this.isCanJudge = false;
         } else {
-          this.isCanJudge = !this.selectedLab.contents.some(content => content.type === 'upload' && isEmpty(content.file));
+          this.isCanJudge = !this.selectedLab.uploads.some(content => isEmpty(content.file));
         }
       },
     },
   },
   async beforeMount() {
     this.labs = await labService.getLabs();
-    this.selectedId = this.labs[0].id;
+    this.selectedId = this.labs[2].id;
   },
 }
 </script>

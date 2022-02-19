@@ -8,8 +8,19 @@
   >
     <v-card-title>
       <v-icon class="mr-3">{{ downloadIcon }} </v-icon>
-      Download {{ fileType }}
+      Download Files
     </v-card-title>
+    <v-card-text>
+      <div class="d-flex flex-row justify-start">
+        <v-btn
+            v-for="(file, i) in downloads" :key="i"
+            @click="downloadFile(file.link)"
+            class="mr-5"
+        >
+          Download {{ file.text }}
+        </v-btn>
+      </div>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -19,11 +30,15 @@ import { mdiCloudDownloadOutline } from '@mdi/js';
 export default {
   name: 'DownloadOps',
   props: {
-    'reqDest': String,
-    'fileType': String,
+    'downloads': Array,
   },
   data: () => ({
     downloadIcon: mdiCloudDownloadOutline
-  })
+  }),
+  methods: {
+    downloadFile(reqDest) {
+      console.log('download', reqDest);
+    }
+  }
 }
 </script>

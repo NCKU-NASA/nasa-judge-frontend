@@ -8,12 +8,13 @@
   >
     <v-card-title>
       <v-icon class="mr-3">{{ uploadIcon }} </v-icon>
-      Upload {{ fileType }}
+      Upload Files
     </v-card-title>
     <v-card-text>
-      <v-file-input
-          :placeholder="fileType"
-          @change="onFilePicked"
+      <v-file-input v-for="(file) in uploads"
+          :key="file.id"
+          :placeholder="file.text"
+          @change="onFilePicked($event, file.id)"
           truncate-length="30"
       />
     </v-card-text>
@@ -26,16 +27,15 @@ import { mdiCloudUploadOutline } from '@mdi/js';
 export default {
   name: 'UploadOps',
   props: {
-    'fileType': String,
-    'fileId': String,
+    'uploads': Array,
   },
   data: () => ({
     uploadIcon: mdiCloudUploadOutline,
     uploadedFile: null,
   }),
   methods: {
-    onFilePicked(file) {
-      this.$emit('file-uploaded', { id: this.fileId, file })
+    onFilePicked(file, fileId) {
+      this.$emit('file-uploaded', { id: fileId, file })
     }
   }
 }

@@ -102,14 +102,14 @@ export default {
       } catch (err) {
         this.showErrorAlert();
       } finally {
-        this.isConfigLoading = true;
+        this.isConfigLoading = false;
       }
     },
     async judge() {
       this.isJudgeLoading = true;
       try {
         console.log("Judge btn click!")
-        // TODO upload file API (selectedLab.contents[i].file)
+        // TODO upload file API (selectedLab.uploads[i].file)
         // TODO judge API
       } catch (err) {
         this.showErrorAlert();
@@ -125,7 +125,7 @@ export default {
         }, 5000);
       }
     },
-    // put the uploaded file into corresponding content obj
+    // put the uploaded file into corresponding uploads obj
     onUploadFileChange({ id, file }) {
       let contentIndex = this.selectedLab.uploads.findIndex(content => content.id === id);
 
@@ -142,8 +142,6 @@ export default {
   watch: {
     'selectedLab.uploads': {
       handler: function () {
-        console.log('watch selectedLab.uploads')
-        console.log(this.selectedLab.uploads)
         if (isEmpty(this.selectedLab.uploads)) {
           this.isCanJudge = false;
         } else {
@@ -154,7 +152,7 @@ export default {
   },
   async beforeMount() {
     this.labs = await labService.getLabs();
-    this.selectedId = this.labs[2].id;
+    this.selectedId = this.labs[0].id;
   },
 }
 </script>

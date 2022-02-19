@@ -15,7 +15,7 @@
           :key="file.id"
           :placeholder="file.text"
           @change="onFilePicked($event, file.id)"
-          truncate-length="30"
+          truncate-length="70"
       />
     </v-card-text>
   </v-card>
@@ -31,7 +31,6 @@ export default {
   },
   data: () => ({
     uploadIcon: mdiCloudUploadOutline,
-    uploadedFile: null,
   }),
   methods: {
     onFilePicked(file, fileId) {

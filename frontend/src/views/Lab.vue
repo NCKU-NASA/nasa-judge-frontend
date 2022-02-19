@@ -9,7 +9,7 @@
       <ol>
         <li>Click <strong>Download Config</strong> for the config file (same for every lab)</li>
         <li>Select the lab you want to submit</li>
-        <li>Upload / Download corresponding files</li>
+        <li>Upload / Download required files</li>
         <li>Click the <strong>Judge</strong> button</li>
         <li>Good luck! :)</li>
       </ol>
@@ -24,7 +24,7 @@
     </v-alert>
     <div class="lab-nav">
       <v-select
-        :items="labId"
+        :items="labIds"
         hide-details
         filled
         label="Select Lab"
@@ -39,9 +39,10 @@
       </v-btn>
       <v-btn
           :loading="isJudgeLoading"
+          :disabled="!isCanJudge"
           @click="judge"
           color="teal"
-          dark
+          :dark="isCanJudge"
       >
         Judge
       </v-btn>
@@ -50,14 +51,15 @@
       <div v-for="(fileOps, i) in selectedLab.contents" :key="i">
         <div v-if="fileOps.type === 'download'">
           <Download
-            :req-url="fileOps.link"
-            :text="fileOps.text"
+            :req-dest="fileOps.link"
+            :file-type="fileOps.text"
           />
         </div>
         <div v-else-if="fileOps.type === 'upload'">
           <Upload
-            :req-url="fileOps.link"
-            :text="fileOps.text"
+            :file-id="fileOps.id"
+            :file-type="fileOps.text"
+            @file-uploaded="onUploadFileChange"
           />
         </div>
         <div v-else>
@@ -72,12 +74,14 @@
 import labService from '@/services/lab';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
+import { isEmpty } from '@/helpers/helper';
 
 export default {
   name: 'Lab',
   data: () => ({
     labs: [],
     selectedId: -1,
+    isCanJudge: false,
     isJudgeLoading: false,
     isConfigLoading: false,
     isShowError: false,
@@ -87,15 +91,15 @@ export default {
     Upload,
   },
   computed: {
-    labId() {
+    labIds: function() {
       return this.labs.map((lab) => lab.id);
     },
-    selectedLab() {
+    selectedLab: function() {
       if (this.selectedId < 0) {
         return [];
       }
       return this.labs.find((lab) => lab.id === this.selectedId);
-    }
+    },
   },
   methods: {
     async downloadConfig() {
@@ -112,6 +116,7 @@ export default {
       this.isJudgeLoading = true;
       try {
         console.log("Judge btn click!")
+        // TODO upload file API (selectedLab.contents[i].file)
         // TODO judge API
       } catch (err) {
         this.showErrorAlert();
@@ -126,7 +131,28 @@ export default {
           this.isShowError = false;
         }, 5000);
       }
+    },
+    // put the uploaded file into corresponding content obj
+    onUploadFileChange({ id, file }) {
+      let contentIndex = this.selectedLab.contents.findIndex(content => content.id === id);
+
+      // this.selectedLab.contents[i] cannot trigger watcher
+      this.$set(this.selectedLab.contents, contentIndex, {
+        ...this.selectedLab.contents[contentIndex],
+        file,
+      })
     }
+  },
+  watch: {
+    'selectedLab.contents': {
+      handler: function () {
+        if (isEmpty(this.selectedLab.contents)) {
+          this.isCanJudge = false;
+        } else {
+          this.isCanJudge = !this.selectedLab.contents.some(content => content.type === 'upload' && isEmpty(content.file));
+        }
+      },
+    },
   },
   async beforeMount() {
     this.labs = await labService.getLabs();

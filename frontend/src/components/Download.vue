@@ -8,7 +8,7 @@
   >
     <v-card-title>
       <v-icon class="mr-3">{{ downloadIcon }} </v-icon>
-      Download {{ text }}
+      Download {{ fileType }}
     </v-card-title>
   </v-card>
 </template>
@@ -19,8 +19,8 @@ import { mdiCloudDownloadOutline } from '@mdi/js';
 export default {
   name: 'DownloadOps',
   props: {
-    'reqUrl': String,
-    'text': String,
+    'reqDest': String,
+    'fileType': String,
   },
   data: () => ({
     downloadIcon: mdiCloudDownloadOutline

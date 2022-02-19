@@ -8,8 +8,15 @@
   >
     <v-card-title>
       <v-icon class="mr-3">{{ uploadIcon }} </v-icon>
-      Upload {{ text }}
+      Upload {{ fileType }}
     </v-card-title>
+    <v-card-text>
+      <v-file-input
+          :placeholder="fileType"
+          @change="onFilePicked"
+          truncate-length="30"
+      />
+    </v-card-text>
   </v-card>
 </template>
 
@@ -19,11 +26,17 @@ import { mdiCloudUploadOutline } from '@mdi/js';
 export default {
   name: 'UploadOps',
   props: {
-    'reqUrl': String,
-    'text': String,
+    'fileType': String,
+    'fileId': String,
   },
   data: () => ({
-    uploadIcon: mdiCloudUploadOutline
-  })
+    uploadIcon: mdiCloudUploadOutline,
+    uploadedFile: null,
+  }),
+  methods: {
+    onFilePicked(file) {
+      this.$emit('file-uploaded', { id: this.fileId, file })
+    }
+  }
 }
 </script>

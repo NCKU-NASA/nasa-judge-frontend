@@ -5,20 +5,14 @@
         <v-btn
           id="config-btn"
           @click="downloadConfig"
-        >
-          Download Config
-        </v-btn>
-        <v-select
-          :items="labId"
-          hide-details
-          filled
-          label="Select Lab"
-          dense
-          v-model='selectedId'
-        ></v-select>
-      </div>
+      >
+        Download Config
+      </v-btn>
     </div>
     <div>
+    <div class="file-ops">
+
+    </div>
       <v-list rounded>
         <v-list-item-group
           color="primary"
@@ -28,7 +22,7 @@
             :key="i"
           >
             <v-list-item-icon>
-              <v-icon v-text="content.icon"></v-icon>
+              <v-icon>{{ content.icon }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title v-text="content.text"></v-list-item-title>
@@ -36,12 +30,13 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
-    </div>
+  </div>
   </div>
 </template>
 
 <script>
 import labService from '@/services/lab';
+
 export default {
   name: 'Lab',
   data: () => ({
@@ -56,43 +51,53 @@ export default {
       if (this.selectedId < 0) {
         return [];
       }
-      const selectedLab = this.labs.find((lab) => lab.id === this.selectedId);
-      return selectedLab;
+      return this.labs.find((lab) => lab.id === this.selectedId);
     }
   },
   methods: {
     async downloadConfig() {
       await labService.downloadFile('/user/config', 'lab_config.zip');
     },
-    async renderLabs() {
-
-    }
   },
   async beforeMount() {
-    const data = await labService.getLabs();
-    this.labs = data.labs;
-    this.labs.forEach((lab, i) => {
-      this.labs[i].contents.forEach((content, j) => {
-        if (content.type === 'download') {
-          this.labs[i].contents[j].icon = 'file_download';
-        }
-        else if (content.type === 'upload') {
-          this.labs[i].contents[j].icon = 'file_upload';
-        }
-      });
-    });
-    console.log(this.labs);
+    this.labs = await labService.getLabs();
   },
 }
 </script>
 
-<style scoped>
-#config-btn {
-  margin-bottom: 20px;
-  height: 46px;
+<style lang="scss">
+#instruction {
+  width: 500px;
+
+  .info--text {
+    align-self: center;
+    margin-right: 30px;
+    margin-left: 10px;
+  }
+  .v-alert__content {
+    text-align: left;
+    line-height: 30px;
+  }
 }
 
-.login-div {
+.lab-nav {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  .v-select {
+    max-width: 200px;
+  }
+}
+
+#config-btn {
+  height: 52px;
+  margin-left: 50px;
+}
+
+.lab-container {
   flex-direction: column;
   display: flex;
   width: 100%;

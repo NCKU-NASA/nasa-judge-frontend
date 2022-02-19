@@ -1,8 +1,29 @@
 <template>
-  <div>
-    <div class='login-div'>
-      <div>
-        <v-btn
+  <div class='lab-container'>
+    <v-alert
+        id="instruction"
+        elevation="3"
+        text
+        type="info"
+    >
+      <ol>
+        <li>Download configuration file (same for every lab)</li>
+        <li>Select the lab you want to submit</li>
+        <li>Upload / Download corresponding files</li>
+        <li>Click the <strong>Judge</strong> button</li>
+        <li>Done! :)</li>
+      </ol>
+    </v-alert>
+    <div class="lab-nav">
+      <v-select
+        :items="labId"
+        hide-details
+        filled
+        label="Select Lab"
+        dense
+        v-model='selectedId'
+      ></v-select>
+      <v-btn
           id="config-btn"
           @click="downloadConfig"
       >

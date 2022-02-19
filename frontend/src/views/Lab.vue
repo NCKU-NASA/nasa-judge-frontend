@@ -46,6 +46,9 @@
       >
         Judge
       </v-btn>
+      <div v-show="isShowScore" class="ml-9 red--text">
+        Score: {{ score }}
+      </div>
     </div>
     <div class="file-ops">
       <div v-if="isNotEmpty(selectedLab.downloads)">
@@ -74,10 +77,12 @@ export default {
   data: () => ({
     labs: [],
     selectedId: -1,
+    score: 0,
     isCanJudge: false,
     isJudgeLoading: false,
     isConfigLoading: false,
     isShowError: false,
+    isShowScore: false,
   }),
   components: {
     Download,
@@ -107,10 +112,13 @@ export default {
     },
     async judge() {
       this.isJudgeLoading = true;
+      this.isShowScore = false;
       try {
         console.log("Judge btn click!")
         // TODO upload file API (selectedLab.uploads[i].file)
-        // TODO judge API
+        // TODO judge API (return score)
+        this.score = 100;
+        this.isShowScore = true;
       } catch (err) {
         this.showErrorAlert();
       } finally {
@@ -143,7 +151,7 @@ export default {
     'selectedLab.uploads': {
       handler: function () {
         if (isEmpty(this.selectedLab.uploads)) {
-          this.isCanJudge = false;
+          this.isCanJudge = true;
         } else {
           this.isCanJudge = !this.selectedLab.uploads.some(content => isEmpty(content.file));
         }

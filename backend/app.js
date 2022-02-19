@@ -2,13 +2,18 @@ require('./utils/config').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+const session = require('./middlewares/session');
+const auth = require('./middlewares/auth');
 
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/user');
-var labsRouter = require('./routes/labs');
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/user');
+const labsRouter = require('./routes/labs');
 
-var app = express();
+const app = express();
 
+app.set('trust proxy', 1);
+app.use(session);
+app.use(auth.addMeta);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,8 +29,7 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  console.error(err.message);
-  res.status(err.status || 500).send('Error occurred');
+  res.status(err.status || 500).send(err.message);
 });
 
 module.exports = app;

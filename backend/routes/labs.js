@@ -1,23 +1,14 @@
 const express = require('express');
+const Lab = require('../models/lab');
 const router = express.Router();
 
 router.get('/', async function(req, res, next) {
-  const labs = [
-    {
-      id: 'Lab 1',
-      contents: [
-        { type: 'download', link: '/test', text: 'config' },
-        { type: 'upload', link: '/hello', text: 'CA cert' },
-      ],
-    },
-    {
-      id: 'Lab 2',
-      contents: [
-        { type: 'download', link: '/test2', text: 'config2' },
-      ],
-    }
-  ];
-  res.send({ labs });
+  try {
+    const labs = await Lab.getLabs();
+    res.send({ labs });
+  } catch(err) {
+    next(err);
+  }
 });
 
 module.exports = router;

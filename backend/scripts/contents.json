@@ -1,0 +1,1 @@
+[{ "type": "download", "link": "/test", "text": "config" },{ "type": "download", "link": "/test2", "text": "config2" },{ "id": "caCert", "type": "upload", "link": "/test", "text": "config" },{ "id": "caCert2", "type": "upload", "link": "/test", "text": "config2" }]

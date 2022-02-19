@@ -198,7 +198,6 @@ export default {
 
   #instruction {
     width: 600px;
-    align-self: center;
     margin-bottom: 40px;
     .info--text {
       align-self: center;

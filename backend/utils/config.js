@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 
 const requiredVars = [
   'DB_NAME',
@@ -6,6 +7,10 @@ const requiredVars = [
   'DB_PASSWD'
 ];
 const lackVars = [];
+
+function createFilesDir() {
+  fs.mkdirSync('files', { recursive: true });
+}
 
 function config() {
   requiredVars.forEach((envVar) => {
@@ -17,6 +22,7 @@ function config() {
     console.error(`ERROR: Environment variables ${lackVars.join(', ')} not set.`);
     process.exit(1);
   }
+  createFilesDir();
 }
 
 module.exports = {

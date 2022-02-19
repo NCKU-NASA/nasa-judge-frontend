@@ -17,8 +17,7 @@ isExists().then((result) => {
   if (!result) {
     con.query('CREATE TABLE ?? (\
       studentId varchar(255) PRIMARY KEY,\
-      password varchar(255),\
-      configPath varchar(255)\
+      password varchar(255)\
     )', [table_name]);
   }
 });
@@ -28,12 +27,12 @@ function getUser(studentId) {
     return false;
   }
   return new Promise((resolve, reject) => {
-    con.query('SELECT * FROM ?? WHERE studentId=?'
+    con.query('SELECT * FROM ?? WHERE studentId=? LIMIT 1'
       , [table_name, studentId], (err, result) => {
       if (err) {
         reject(err);
       }
-      resolve(result);
+      resolve(result.length === 0 ? undefined : result[0]);
     });
   });
 }
@@ -41,5 +40,4 @@ function getUser(studentId) {
 module.exports = {
   isExists,
   getUser,
-  
 };

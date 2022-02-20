@@ -38,7 +38,11 @@ export default {
   }),
   methods: {
     async downloadFile(uri, filename) {
-      await fileService.downloadFile(uri, filename);
+      try {
+        await fileService.downloadFile(uri, filename);
+      } catch(err) {
+        this.$emit('request-error', err.response.statusText);
+      }
     }
   }
 }

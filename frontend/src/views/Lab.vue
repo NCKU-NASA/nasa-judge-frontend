@@ -20,7 +20,7 @@
         :value="isShowError"
         transition="fade-transition"
     >
-      Sorry, something went wrong :( Please try again later.
+      {{ errMsg }}
     </v-alert>
     <div class="lab-nav">
       <v-select
@@ -54,6 +54,7 @@
       <div v-if="isNotEmpty(selectedLab.downloads)">
         <Download
           :downloads="selectedLab.downloads"
+          @request-error="showErrorAlert"
         />
       </div>
       <div v-if="isNotEmpty(selectedLab.uploads)">
@@ -84,6 +85,7 @@ export default {
     isConfigLoading: false,
     isShowError: false,
     isShowScore: false,
+    errMsg: '',
   }),
   components: {
     Download,
@@ -106,7 +108,7 @@ export default {
       try {
         await fileService.downloadFile('/user/config', 'lab_config.zip');
       } catch (err) {
-        this.showErrorAlert();
+        this.showErrorAlert(err.response.statusText);
       } finally {
         this.isConfigLoading = false;
       }
@@ -115,7 +117,6 @@ export default {
       this.isJudgeLoading = true;
       this.isShowScore = false;
       try {
-        console.log("Judge btn click!");
         const formData = new FormData();
         formData.append('id', this.selectedLab.id);
         this.selectedLab.uploads.forEach((upload) => {
@@ -126,17 +127,18 @@ export default {
         this.score = 100;
         this.isShowScore = true;
       } catch (err) {
-        this.showErrorAlert();
+        this.showErrorAlert(err.response.data);
       } finally {
         this.isJudgeLoading = false;
       }
     },
-    showErrorAlert() {
+    showErrorAlert(errMsg) {
       if (!this.isShowError) {
         this.isShowError = true;
+        this.errMsg = errMsg;
         window.setTimeout(() => {
           this.isShowError = false;
-        }, 5000);
+        }, 3000);
       }
     },
     // put the uploaded file into corresponding uploads obj

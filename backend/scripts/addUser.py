@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-import pymysql, sys, json
+import pymysql, sys, json, os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # TODO: fill these values
-username = ''
-password = ''
-database = ''
-table_name = ''
+username = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWD')
+database = os.getenv('DB_NAME')
+table_name = 'user'
 
 if len(sys.argv) != 2:
-  print(sys.argv)
   print('Usage: ./addUser.py <file_path>')
   sys.exit(1)
 

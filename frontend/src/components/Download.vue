@@ -14,7 +14,7 @@
       <div class="d-flex flex-row justify-start">
         <v-btn
             v-for="(file, i) in downloads" :key="i"
-            @click="downloadFile(file.link)"
+            @click="downloadFile(file.link, file.name)"
             class="mr-5"
         >
           Download {{ file.text }}
@@ -26,6 +26,7 @@
 
 <script>
 import { mdiCloudDownloadOutline } from '@mdi/js';
+import fileService from '@/services/file';
 
 export default {
   name: 'DownloadOps',
@@ -36,8 +37,8 @@ export default {
     downloadIcon: mdiCloudDownloadOutline
   }),
   methods: {
-    downloadFile(reqDest) {
-      console.log('download', reqDest);
+    async downloadFile(uri, filename) {
+      await fileService.downloadFile(uri, filename);
     }
   }
 }

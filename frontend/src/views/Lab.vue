@@ -68,6 +68,7 @@
 
 <script>
 import labService from '@/services/lab';
+import fileService from '@/services/file';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
 import { isEmpty, isNotEmpty } from '@/helpers/helper';
@@ -103,7 +104,7 @@ export default {
     async downloadConfig() {
       this.isConfigLoading = false;
       try {
-        await labService.downloadFile('/user/config', 'lab_config.zip');
+        await fileService.downloadFile('/user/config', 'lab_config.zip');
       } catch (err) {
         this.showErrorAlert();
       } finally {
@@ -114,8 +115,13 @@ export default {
       this.isJudgeLoading = true;
       this.isShowScore = false;
       try {
-        console.log("Judge btn click!")
-        // TODO upload file API (selectedLab.uploads[i].file)
+        console.log("Judge btn click!");
+        const formData = new FormData();
+        formData.append('id', this.selectedLab.id);
+        this.selectedLab.uploads.forEach((upload) => {
+          formData.append('uploads', upload.file);
+        });
+        await fileService.uploadFile('/judge', formData);
         // TODO judge API (return score)
         this.score = 100;
         this.isShowScore = true;

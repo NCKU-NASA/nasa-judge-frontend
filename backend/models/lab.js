@@ -41,6 +41,28 @@ function getLabs() {
   });
 }
 
+function getLab(labId) {
+  return new Promise((resolve, reject) => {
+    con.query('SELECT * FROM ?? WHERE id=? LIMIT 1'
+      , [table_name, labId], (err, row) => {
+      if (err) {
+        reject(err);
+      }
+      if (row.length !== 1) {
+        resolve();
+      }
+      row = row[0];
+      try {
+        row.contents = JSON.parse(row.contents);
+      } catch(err) {
+        reject(err);
+      }
+      resolve(row);
+    });
+  });
+}
+
 module.exports = {
   getLabs,
+  getLab,
 };

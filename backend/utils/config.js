@@ -1,5 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
+const User = require('../models/user');
 
 const requiredVars = [
   'DB_NAME',
@@ -10,6 +12,14 @@ const lackVars = [];
 
 function createFilesDir() {
   fs.mkdirSync('files', { recursive: true });
+}
+
+async function createUserDir() {
+  User.getUsers().then((users) => {
+    users.map((user) => {
+      fs.mkdirSync(path.join(__dirname, `../files/${user.studentId}`), { recursive: true });
+    });
+  });
 }
 
 function config() {
@@ -23,6 +33,7 @@ function config() {
     process.exit(1);
   }
   createFilesDir();
+  createUserDir();
 }
 
 module.exports = {

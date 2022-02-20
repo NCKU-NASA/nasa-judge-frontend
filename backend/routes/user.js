@@ -3,8 +3,16 @@ const createError = require('http-errors');
 const User = require('../models/user');
 const path = require('path');
 const auth = require('../middlewares/auth');
+const fs = require('fs');
 const router = express.Router();
 const configFilename = 'lab_config.zip';
+
+function createUserDir(studentId) {
+  if (!studentId) {
+    throw createError(400, 'Invalid studentId');
+  }
+  fs.mkdirSync(path.join(__dirname, `../files/${studentId}`), { recursive: true });
+}
 
 router.post('/login', async function(req, res, next) {
   try {
@@ -16,6 +24,7 @@ router.post('/login', async function(req, res, next) {
       studentId: user.studentId,
     };
     res.send('Login success');
+    createUserDir(user.studentId);
   } catch(err) {
     next(err);
   }

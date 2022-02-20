@@ -37,7 +37,20 @@ function getUser(studentId) {
   });
 }
 
+function getUsers() {
+  return new Promise((resolve, reject) => {
+    con.query('SELECT * FROM ??'
+      , [table_name], (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
 module.exports = {
   isExists,
   getUser,
+  getUsers,
 };

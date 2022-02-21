@@ -39,3 +39,8 @@ sql = f'INSERT INTO `{table_name}` (`studentId`, `password`) VALUES (%s, %s)'
 cur.execute(sql, (data['studentId'], data['password']))
 db.commit()
 db.close()
+
+try:
+  os.mkdir(f'../files/{data['studentId']}')
+except FileExistsError:
+  print('Directory has already existed')

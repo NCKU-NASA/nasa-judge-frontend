@@ -5,7 +5,7 @@ const path = require('path');
 const auth = require('../middlewares/auth');
 const fs = require('fs');
 const router = express.Router();
-const configFilename = 'lab_config.zip';
+const configFilename = 'wireguard.conf';
 
 function createUserDir(studentId) {
   if (!studentId) {

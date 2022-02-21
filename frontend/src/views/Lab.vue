@@ -106,7 +106,7 @@ export default {
     async downloadConfig() {
       this.isConfigLoading = false;
       try {
-        await fileService.downloadFile('/user/config', 'lab_config.zip');
+        await fileService.downloadFile('/user/config', 'wireguard.conf');
       } catch (err) {
         this.showErrorAlert(err.response.statusText);
       } finally {

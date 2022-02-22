@@ -14,6 +14,14 @@ function createUserDir(studentId) {
   fs.mkdirSync(path.join(__dirname, `../files/${studentId}`), { recursive: true });
 }
 
+router.get('/', auth.checkSignIn, function(req, res, next) {
+  try {
+    res.send({ user: req.session.user.studentId });
+  } catch(err) {
+    next(err);
+  }
+})
+
 router.post('/login', async function(req, res, next) {
   try {
     const user = await User.getUser(req.body.studentId);

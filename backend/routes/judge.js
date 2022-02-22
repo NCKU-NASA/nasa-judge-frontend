@@ -22,12 +22,13 @@ router.post('/', auth.checkSignIn, upload.array('uploads', maxUploadCount), asyn
     }
     const studentId = req.session.user.studentId;
     const fileContents = await placeUploadFiles(req.files, studentId, lab);
+    const inputContents = placeInputs(req.body.inputs, lab);
 
     // send request to judge server
     const body = {
       labId: lab.id,
       studentId,
-      data: fileContents,
+      data: fileContents.concat(inputContents),
     };
     const result = await axios.post(judgeUrl, body);
     const score = calcScore(result.data);
@@ -43,18 +44,18 @@ router.post('/', auth.checkSignIn, upload.array('uploads', maxUploadCount), asyn
 });
 
 function calcScore(judgeResult) {
-  let correct = 0;
+  let score = 0;
   judgeResult.external.forEach((result) => {
     if (result.ans === true) {
-      correct += 1;
+      score += result.weight;
     }
   });
   judgeResult.internal.forEach((result) => {
     if (result.ans === true) {
-      correct += 1;
+      score += result.weight;
     }
   });
-  return correct / (judgeResult.external.length + judgeResult.internal.length) * 100;
+  return score;
 }
 
 // move files according to lab.contents[i].name and place every file in user's dir
@@ -84,6 +85,24 @@ function placeUploadFiles(files, subdir, lab) {
       });
     });
   }));
+}
+
+function placeInputs(inputs, lab) {
+  if (!Array.isArray(inputs)) {
+    inputs = [inputs];
+  }
+  // find input entries
+  const contents = lab.contents.filter((content) => content.type === 'input');
+  if (contents.length !== inputs.length) {
+    throw createError(400, 'The number of inputs did not match');
+  }
+  return contents.map((content, i) => {
+    return {
+      type: 'value',
+      name: content.name,
+      data: inputs[i],
+    };
+  });
 }
 
 function removeTempFiles(files) {

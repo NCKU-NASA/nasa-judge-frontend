@@ -66,6 +66,12 @@
           @file-uploaded="onUploadFileChange"
         />
       </div>
+      <div v-if="isNotEmpty(selectedLab.inputs)">
+        <TextInput
+          :textInputs="selectedLab.inputs"
+          @input-changed="onInputChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -75,6 +81,7 @@ import labService from '@/services/lab';
 import fileService from '@/services/file';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
+import TextInput from '@/components/TextInput';
 import { isEmpty, isNotEmpty } from '@/helpers/helper';
 
 export default {
@@ -94,6 +101,7 @@ export default {
   components: {
     Download,
     Upload,
+    TextInput
   },
   computed: {
     labIds: function() {
@@ -126,6 +134,9 @@ export default {
         this.selectedLab.uploads.forEach((upload) => {
           formData.append('uploads', upload.file);
         });
+        this.selectedLab.inputs.forEach((input) => {
+          formData.append('inputs', input.data);
+        })
         const result = await fileService.uploadFile('/judge', formData);
         console.log(result);
         this.score = result.data.score;
@@ -159,6 +170,15 @@ export default {
       this.$set(this.selectedLab.uploads, contentIndex, {
         ...this.selectedLab.uploads[contentIndex],
         file,
+      })
+    },
+    onInputChange({ name, data }) {
+      let contentIndex = this.selectedLab.inputs.findIndex(content => content.name === name);
+
+      // this.selectedLab.contents[i] cannot trigger watcher
+      this.$set(this.selectedLab.inputs, contentIndex, {
+        ...this.selectedLab.inputs[contentIndex],
+        data,
       })
     },
     isNotEmpty(val) {

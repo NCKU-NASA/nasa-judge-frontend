@@ -22,7 +22,7 @@ function processLabsRes(res) {
         const { type, ...downloadObj  } = content;
         downloads.push(downloadObj);
       }
-    })
+    });
 
     let uploads = [];
     lab.contents.forEach(content => {
@@ -31,11 +31,21 @@ function processLabsRes(res) {
         const { type, ...uploadObj  } = content;
         uploads.push(uploadObj);
       }
-    })
+    });
+    
+    let inputs = [];
+    lab.contents.forEach(content => {
+      if (content.type === 'input') {
+        // eslint-disable-next-line no-unused-vars
+        const { type, ...inputObj  } = content;
+        inputs.push(inputObj);
+      }
+    });
     return {
       id: lab.id,
       downloads,
       uploads,
+      inputs,
     }
   })
 }

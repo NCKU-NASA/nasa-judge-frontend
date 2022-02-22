@@ -10,16 +10,14 @@ password = os.getenv('DB_PASSWD')
 database = os.getenv('DB_NAME')
 table_name = 'user'
 
-if len(sys.argv) != 2:
-  print('Usage: ./addUser.py <file_path>')
+if len(sys.argv) != 3:
+  print('Usage: ./addUser.py <student_id> <password>')
   sys.exit(1)
 
-path = sys.argv[1]
+student_id = sys.argv[1]
+student_pass = sys.argv[2]
 
-with open(path, 'r') as f:
-  data = f.read()
 try:
-  data = json.loads(data)
   db = pymysql.connect(
     host='localhost',
     user=username,
@@ -30,17 +28,19 @@ except Exception as err:
   print(err)
   sys.exit(1)
 
-if not data['studentId'] or not data['password']:
-  print('studentId and password are required')
-  sys.exit(1)
-
 cur = db.cursor()
+cur.execute(f'SELECT * FROM `{table_name}` WHERE studentId=%s', (student_id))
+res = cur.fetchall()
+if len(res) != 0:
+  print(f'{student_id} already exists')
+  sys.exit(0)
+
 sql = f'INSERT INTO `{table_name}` (`studentId`, `password`) VALUES (%s, %s)'
-cur.execute(sql, (data['studentId'], data['password']))
+cur.execute(sql, (student_id, student_pass))
 db.commit()
 db.close()
 
 try:
-  os.mkdir(f'../files/{data['studentId']}')
+  os.mkdir(f'../files/{student_id}')
 except FileExistsError:
-  print('Directory has already existed')
+  print('Directory already exists')

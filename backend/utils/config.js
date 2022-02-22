@@ -6,7 +6,9 @@ const User = require('../models/user');
 const requiredVars = [
   'DB_NAME',
   'DB_USER',
-  'DB_PASSWD'
+  'DB_PASSWD',
+  'SECRET',
+  'JUDGE_URL',
 ];
 const lackVars = [];
 

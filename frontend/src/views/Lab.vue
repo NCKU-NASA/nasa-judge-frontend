@@ -46,6 +46,9 @@
       >
         Judge
       </v-btn>
+      <div class="ml-9 black--text">
+        Current Highest Score: {{ maxScore }}
+      </div>
       <div v-show="isShowScore" class="ml-9 red--text">
         Score: {{ score }}
       </div>
@@ -80,6 +83,7 @@ export default {
     labs: [],
     selectedId: -1,
     score: 0,
+    maxScore: 0,
     isCanJudge: false,
     isJudgeLoading: false,
     isConfigLoading: false,
@@ -122,10 +126,16 @@ export default {
         this.selectedLab.uploads.forEach((upload) => {
           formData.append('uploads', upload.file);
         });
-        await fileService.uploadFile('/judge', formData);
-        // TODO judge API (return score)
-        this.score = 100;
+        const result = await fileService.uploadFile('/judge', formData);
+        console.log(result);
+        this.score = result.data.score;
         this.isShowScore = true;
+        if (this.score > this.maxScore) {
+          this.maxScore = this.score;
+        }
+        setTimeout(() => {
+          this.isShowScore = false;
+        }, 3000);
       } catch (err) {
         this.showErrorAlert(err.response.data);
       } finally {
@@ -169,6 +179,7 @@ export default {
   async beforeMount() {
     this.labs = await labService.getLabs();
     this.selectedId = this.labs[0].id;
+    this.maxScore = await labService.getMaxLabScore(this.selectedId);
   },
 }
 </script>
@@ -200,7 +211,6 @@ export default {
 
   #error-msg {
     width: 500px;
-    align-self: center;
     margin-bottom: 40px;
   }
 

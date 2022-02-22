@@ -1,10 +1,10 @@
 const con = require('../utils/database');
-const table_name = 'lab';
+const tableName = 'lab';
 
 function isExists() {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM information_schema.tables WHERE table_schema=? AND table_name=? LIMIT 1'
-      , [process.env.DB_NAME, table_name], (err, result) => {
+      , [process.env.DB_NAME, tableName], (err, result) => {
       if (err) {
         reject(err);
       }
@@ -18,14 +18,14 @@ isExists().then((result) => {
     con.query('CREATE TABLE ?? (\
       id varchar(255) PRIMARY KEY,\
       contents JSON\
-    )', [table_name]);
+    )', [tableName]);
   }
 });
 
 function getLabs() {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM ??'
-      , [table_name], (err, rows) => {
+      , [tableName], (err, rows) => {
       if (err) {
         reject(err);
       }
@@ -44,7 +44,7 @@ function getLabs() {
 function getLab(labId) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM ?? WHERE id=? LIMIT 1'
-      , [table_name, labId], (err, row) => {
+      , [tableName, labId], (err, row) => {
       if (err) {
         reject(err);
       }

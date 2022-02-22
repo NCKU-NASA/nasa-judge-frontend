@@ -1,7 +1,8 @@
 const express = require('express');
 const createError = require('http-errors');
-const User = require('../models/user');
+const Score = require('../models/score');
 const Lab = require('../models/lab');
+const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 const auth = require('../middlewares/auth');
@@ -11,6 +12,7 @@ const router = express.Router();
 const uploadPath = path.join(__dirname, '../files');
 const upload = multer({ dest: uploadPath });
 const maxUploadCount = 20;
+const judgeUrl = process.env.JUDGE_URL;
 
 router.post('/', auth.checkSignIn, upload.array('uploads', maxUploadCount), async function(req, res, next) {
   try {
@@ -19,17 +21,41 @@ router.post('/', auth.checkSignIn, upload.array('uploads', maxUploadCount), asyn
       throw createError(404);
     }
     const studentId = req.session.user.studentId;
-    placeUploadFiles(req.files, studentId, lab);
+    const fileContents = await placeUploadFiles(req.files, studentId, lab);
 
-    // TODO: send request to judge server
-    // TODO: save score
+    // send request to judge server
+    const body = {
+      labId: lab.id,
+      studentId,
+      data: fileContents,
+    };
+    const result = await axios.post(judgeUrl, body);
+    const score = calcScore(result.data);
 
-    res.sendStatus(200);
+    // save score
+    await Score.addScore(studentId, lab.id, score, result.data);
+
+    res.send({ score });
   } catch(err) {
     next(err);
   }
   removeTempFiles(req.files);
 });
+
+function calcScore(judgeResult) {
+  let correct = 0;
+  judgeResult.external.forEach((result) => {
+    if (result.ans === true) {
+      correct += 1;
+    }
+  });
+  judgeResult.internal.forEach((result) => {
+    if (result.ans === true) {
+      correct += 1;
+    }
+  });
+  return correct / (judgeResult.external.length + judgeResult.internal.length) * 100;
+}
 
 // move files according to lab.contents[i].name and place every file in user's dir
 function placeUploadFiles(files, subdir, lab) {
@@ -42,6 +68,22 @@ function placeUploadFiles(files, subdir, lab) {
   files.forEach((file, i) => {
     fs.copyFileSync(path.join(uploadPath, file.filename), path.join(uploadPath, `${subdir}/${contents[i].name}`));
   });
+
+  // read data
+  return Promise.all(contents.map((content) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(path.join(uploadPath, `${subdir}/${content.name}`), (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve({
+          type: 'file',
+          name: content.name,
+          data: Buffer.from(data).toString('base64'),
+        });
+      });
+    });
+  }));
 }
 
 function removeTempFiles(files) {

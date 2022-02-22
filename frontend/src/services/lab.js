@@ -7,6 +7,11 @@ function getLabs() {
     });
 }
 
+function getMaxLabScore(labId) {
+  return axios.get(`/labs/${labId}/score`)
+    .then((res) => res.data.score);
+}
+
 function processLabsRes(res) {
 
   return res.map(lab => {
@@ -37,4 +42,5 @@ function processLabsRes(res) {
 
 export default {
   getLabs,
+  getMaxLabScore,
 }

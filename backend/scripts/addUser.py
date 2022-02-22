@@ -34,7 +34,7 @@ if not data['studentId'] or not data['password']:
   print('studentId and password are required')
   sys.exit(1)
 
-cur = db.cursor();
+cur = db.cursor()
 sql = f'INSERT INTO `{table_name}` (`studentId`, `password`) VALUES (%s, %s)'
 cur.execute(sql, (data['studentId'], data['password']))
 db.commit()

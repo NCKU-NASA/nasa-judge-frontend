@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from '@/router';
 
 const maxRetryTime = 3;
 const retryDelay = 1000;
@@ -28,6 +29,9 @@ instance.interceptors.response.use(response => {
   }
   if (!error.response) {
     error.response = { data: 'Network Error' };
+  }
+  if (error.response.status === 401) {
+    router.push('/');
   }
   // reject if the error is not caused at server side
   if (error.response.status !== 500) {

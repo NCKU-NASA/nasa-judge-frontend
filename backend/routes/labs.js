@@ -1,11 +1,13 @@
 const express = require('express');
 const Lab = require('../models/lab');
 const createError = require('http-errors');
+const fs = require('fs');
+const path = require('path');
 const Score = require('../models/score');
 const auth = require('../middlewares/auth');
 const router = express.Router();
 
-router.get('/', async function(req, res, next) {
+router.get('/', auth.checkSignIn, async function(req, res, next) {
   try {
     const labs = await Lab.getLabs();
     res.send({ labs });
@@ -13,6 +15,8 @@ router.get('/', async function(req, res, next) {
     next(err);
   }
 });
+
+router.use('/public', auth.checkSignIn, express.static(path.join(__dirname, '../files/public')));
 
 router.get('/:labId/score', auth.checkSignIn, async function(req, res, next) {
   try {

@@ -13,7 +13,7 @@ const requiredVars = [
 const lackVars = [];
 
 function createFilesDir() {
-  fs.mkdirSync('files', { recursive: true });
+  fs.mkdirSync(path.join(__dirname, '../files/public'), { recursive: true });
 }
 
 async function createUserDir() {

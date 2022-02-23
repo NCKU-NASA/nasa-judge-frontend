@@ -88,6 +88,9 @@ function placeUploadFiles(files, subdir, lab) {
 }
 
 function placeInputs(inputs, lab) {
+  if (!inputs) {
+    return [];
+  }
   if (!Array.isArray(inputs)) {
     inputs = [inputs];
   }

@@ -10,7 +10,7 @@
         <li>Click <strong>Download Config</strong> for the config file (same for every lab)</li>
         <li>Select the lab you want to submit</li>
         <li>Upload / Download required files</li>
-        <li>Click the <strong>Judge</strong> button</li>
+        <li>Click the <strong>Judge</strong> button <strong>(10s cooldown)</strong></li>
         <li>Good luck! :)</li>
       </ol>
     </v-alert>
@@ -91,12 +91,13 @@ export default {
     selectedId: -1,
     score: 0,
     maxScore: 0,
-    isCanJudge: false,
+    isFilledUpload: false,
     isJudgeLoading: false,
     isConfigLoading: false,
     isShowError: false,
     isShowScore: false,
     errMsg: '',
+    isInCoolDown: false,
   }),
   components: {
     Download,
@@ -113,6 +114,9 @@ export default {
       }
       return this.labs.find((lab) => lab.id === this.selectedId);
     },
+    isCanJudge: function() {
+      return this.isFilledUpload && !this.isInCoolDown;
+    },
   },
   methods: {
     async downloadConfig() {
@@ -128,6 +132,10 @@ export default {
     async judge() {
       this.isJudgeLoading = true;
       this.isShowScore = false;
+      this.isInCoolDown = true;
+      setTimeout(() => {
+        this.isInCoolDown = false;
+      }, 10000);
       try {
         const formData = new FormData();
         formData.append('id', this.selectedLab.id);
@@ -189,9 +197,9 @@ export default {
     'selectedLab.uploads': {
       handler: function () {
         if (isEmpty(this.selectedLab.uploads)) {
-          this.isCanJudge = true;
+          this.isFilledUpload = true;
         } else {
-          this.isCanJudge = !this.selectedLab.uploads.some(content => isEmpty(content.file));
+          this.isFilledUpload = !this.selectedLab.uploads.some(content => isEmpty(content.file));
         }
       },
     },

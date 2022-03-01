@@ -36,7 +36,7 @@ router.post('/', auth.checkSignIn, upload.array('uploads', maxUploadCount), asyn
     // save score
     await Score.addScore(studentId, lab.id, score, result.data);
 
-    res.send({ score });
+    res.send({ score, results: result.data });
   } catch(err) {
     next(err);
   }

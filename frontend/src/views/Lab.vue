@@ -191,16 +191,21 @@ export default {
     },
     isNotEmpty(val) {
       return isNotEmpty(val);
-    }
+    },
   },
   watch: {
     'selectedLab.uploads': {
-      handler: function () {
+      handler: function() {
         if (isEmpty(this.selectedLab.uploads)) {
           this.isFilledUpload = true;
         } else {
           this.isFilledUpload = !this.selectedLab.uploads.some(content => isEmpty(content.file));
         }
+      },
+    },
+    selectedId: {
+      handler: async function() {
+        this.maxScore = await labService.getMaxLabScore(this.selectedId);
       },
     },
   },

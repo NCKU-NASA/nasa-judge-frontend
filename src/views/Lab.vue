@@ -72,6 +72,9 @@
           @input-changed="onInputChange"
         />
       </div>
+      <div class=resultdiv>
+        <textarea readonly name="" id="result" cols="30" rows="10"></textarea>
+      </div>
     </div>
   </div>
 </template>
@@ -110,6 +113,10 @@ export default {
       return this.labs.map((lab) => lab.id);
     },
     selectedLab: function() {
+      if(document.getElementById("result") != null)
+      {
+        document.getElementById("result").innerHTML = "";
+      }
       if (this.selectedId < 0) {
         return [];
       }
@@ -150,7 +157,8 @@ export default {
 
         if (alive.data === true) {
           const result = await fileService.uploadFile('/judge', formData);
-          console.log(result);
+          //console.log(result);
+          document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
           this.score = result.data.score;
           this.isShowScore = true;
           if (this.score > this.maxScore) {
@@ -264,6 +272,15 @@ export default {
       text-align: left;
       line-height: 30px;
     }
+  }
+
+  #result {
+    width: 100%;
+    height: 100%;
+    min-height: 30rem;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 }
 </style>

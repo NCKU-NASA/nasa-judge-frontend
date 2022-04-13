@@ -13,7 +13,7 @@ const option = {
 const instance = axios.create(option);
 
 // set up the default timeout threshold
-instance.defaults.timeout = 180000;
+instance.defaults.timeout = 10000;
 
 instance.interceptors.request.use(request => {
   return request;

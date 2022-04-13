@@ -79,6 +79,7 @@
 <script>
 import labService from '@/services/lab';
 import fileService from '@/services/file';
+import checkaliveService from '@/services/checkalive';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
 import TextInput from '@/components/TextInput';
@@ -145,16 +146,20 @@ export default {
         this.selectedLab.inputs.forEach((input) => {
           formData.append('inputs', input.data);
         })
-        const result = await fileService.uploadFile('/judge', formData);
-        console.log(result);
-        this.score = result.data.score;
-        this.isShowScore = true;
-        if (this.score > this.maxScore) {
-          this.maxScore = this.score;
+        const alive = await checkaliveService.checkalive('/checkapialive');
+
+        if (alive.data === true) {
+          const result = await fileService.uploadFile('/judge', formData);
+          console.log(result);
+          this.score = result.data.score;
+          this.isShowScore = true;
+          if (this.score > this.maxScore) {
+            this.maxScore = this.score;
+          }
+          setTimeout(() => {
+            this.isShowScore = false;
+          }, 3000);
         }
-        setTimeout(() => {
-          this.isShowScore = false;
-        }, 3000);
       } catch (err) {
         this.showErrorAlert(err.response.data);
       } finally {

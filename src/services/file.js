@@ -15,6 +15,7 @@ function downloadFile(uri, filename) {
 
 function uploadFile(uri, data) {
   return axios.post(uri, data, {
+    timeout: 0,
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 }

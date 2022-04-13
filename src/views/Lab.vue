@@ -73,7 +73,12 @@
         />
       </div>
       <div class=resultdiv>
-        <textarea readonly name="" id="result" cols="30" rows="10"></textarea>
+        <p style="text-align:left;">results: </p>
+        <textarea class="result" readonly name="" id="result" cols="30" rows="10"></textarea>
+        <p style="text-align:left;">stdout: </p>
+        <textarea class="result" readonly name="" id="stdout" cols="30" rows="10"></textarea>
+        <p style="text-align:left;">stderr: </p>
+        <textarea class="result" readonly name="" id="stderr" cols="30" rows="10"></textarea>
       </div>
     </div>
   </div>
@@ -117,6 +122,14 @@ export default {
       {
         document.getElementById("result").innerHTML = "";
       }
+      if(document.getElementById("stdout") != null)
+      {
+        document.getElementById("stdout").innerHTML = "";
+      }
+      if(document.getElementById("stderr") != null)
+      {
+        document.getElementById("stderr").innerHTML = "";
+      }
       if (this.selectedId < 0) {
         return [];
       }
@@ -153,12 +166,27 @@ export default {
         this.selectedLab.inputs.forEach((input) => {
           formData.append('inputs', input.data);
         })
-        const alive = await checkaliveService.checkalive('/checkapialive');
+        
+        var alive = false
+        try
+        {
+          alive = await checkaliveService.checkalive('/checkapialive');
+        }
+        catch(err)
+        {
+          alive = false
+        }
 
         if (alive.data === true) {
           const result = await fileService.uploadFile('/judge', formData);
           //console.log(result);
+          var stdout = result.data.stdout;
+          var stderr = result.data.stderr;
+          delete result.data['stdout'];
+          delete result.data['stderr'];
           document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
+          document.getElementById("stdout").innerHTML = stdout;
+          document.getElementById("stderr").innerHTML = stderr;
           this.score = result.data.score;
           this.isShowScore = true;
           if (this.score > this.maxScore) {
@@ -167,6 +195,10 @@ export default {
           setTimeout(() => {
             this.isShowScore = false;
           }, 3000);
+        }
+        else
+        {
+          document.getElementById("result").innerHTML = "Back-end is on maintenance";
         }
       } catch (err) {
         this.showErrorAlert(err.response.data);
@@ -274,7 +306,7 @@ export default {
     }
   }
 
-  #result {
+  .result {
     width: 100%;
     height: 100%;
     min-height: 30rem;

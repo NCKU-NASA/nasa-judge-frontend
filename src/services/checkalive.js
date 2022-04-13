@@ -1,7 +1,13 @@
 import axios from '@/plugins/axios.js';
 
 function checkalive(uri) {
-  return axios.get(uri);
+  try
+  {
+    return axios.get(uri);
+  }
+  catch (err) {
+    return false;
+  }
 }
 
 export default {

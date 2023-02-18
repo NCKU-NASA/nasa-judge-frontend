@@ -1,8 +1,8 @@
 upstream nasabackend {
-    server {{ backendhost }};
+    server {{ backendurl }};
 }
 upstream vncproxy {
-    server {{ vncproxyhost }};
+    server {{ vncproxyurl }};
 }
 server {
     listen 443 ssl; # managed by Certbot

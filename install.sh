@@ -110,6 +110,9 @@ then
     oncerts=false
 fi
 
+ansible-galaxy collection install -r $dirpath/requirements.yml -f
+ansible-galaxy role install -r $dirpath/requirements.yml -f
+
 ansible-playbook $dirpath/setup.yml -e "{\"webdir\":\"$webdir\",\"backendhost\":\"$backendhost\",\"vncproxyhost\":\"$vncproxyhost\",\"emails\":$emails, \"certs\":$certs}"
 
 echo ""

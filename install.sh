@@ -8,8 +8,8 @@ printhelp()
 Options:
   -h, --help                            display this help message and exit.
   -d, --webdir DIR                      dir for fronend.
-  -bh, --backendhost HOST               host of backend.
-  -vh, --vncproxyhost HOST              host of vncproxy.
+  -bu, --backendurl URL                 url of backend.
+  -vu, --vncproxyurl URL                url of vncproxy.
   -e, --emails email1,email2...         emails for letsencrypt
   -c, --cert                            cert info.
       -cn                                   cert cn
@@ -26,8 +26,8 @@ gencert()
 dirpath=$(dirname "$0")
 
 webdir="/var/www/nasajudge"
-backendhost="localhost:3000"
-vncproxyhost="localhost:4000"
+backendurl="localhost:3000"
+vncproxyurl="localhost:4000"
 emails="[]"
 certs="[]"
 oncerts=false
@@ -47,23 +47,23 @@ do
             fi
             webdir=$1
             ;;
-        -bh|--backendhost)
+        -bu|--backendurl)
             shift
             if $oncerts
             then
                 certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
                 oncerts=false
             fi
-            backendhost=$1
+            backendurl=$1
             ;;
-        -vh|--vncproxyhost)
+        -vu|--vncproxyurl)
             shift
             if $oncerts
             then
                 certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
                 oncerts=false
             fi
-            vncproxyhost=$1
+            vncproxyurl=$1
             ;;
         -e|--emails)
             shift
@@ -113,7 +113,7 @@ fi
 ansible-galaxy collection install -r $dirpath/requirements.yml -f
 ansible-galaxy role install -r $dirpath/requirements.yml -f
 
-ansible-playbook $dirpath/setup.yml -e "{\"webdir\":\"$webdir\",\"backendhost\":\"$backendhost\",\"vncproxyhost\":\"$vncproxyhost\",\"emails\":$emails, \"certs\":$certs}"
+ansible-playbook $dirpath/setup.yml -e "{\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
 
 echo ""
 echo ""

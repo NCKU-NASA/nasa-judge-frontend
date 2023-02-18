@@ -14,10 +14,10 @@
       <div class="d-flex flex-row justify-start">
         <v-btn
             v-for="(file, i) in downloads" :key="i"
-            @click="downloadFile(file.link, file.name)"
+            @click="downloadFile(labId, file.name)"
             class="mr-5"
         >
-          Download {{ file.text }}
+          Download {{ file.alias }}
         </v-btn>
       </div>
     </v-card-text>
@@ -32,14 +32,15 @@ export default {
   name: 'DownloadOps',
   props: {
     'downloads': Array,
+    'labId': String
   },
   data: () => ({
     downloadIcon: mdiCloudDownloadOutline
   }),
   methods: {
-    async downloadFile(uri, filename) {
+    async downloadFile(lab, filename) {
       try {
-        await fileService.downloadFile(uri, filename);
+        await fileService.downloadFile(`/labs/${lab}/download`, filename);
       } catch(err) {
         this.$emit('request-error', err.response.statusText);
       }

@@ -33,7 +33,9 @@
       ></v-select>
       <v-btn
           :loading="isConfigLoading"
+          :disabled="isConfigLoading"
           @click="downloadConfig"
+          :dark="!isConfigLoading"
       >
         Download Config
       </v-btn>
@@ -57,6 +59,7 @@
       <div v-if="isNotEmpty(selectedLab.downloads)">
         <Download
           :downloads="selectedLab.downloads"
+          :labId="selectedId"
           @request-error="showErrorAlert"
         />
       </div>
@@ -87,7 +90,7 @@
 <script>
 import labService from '@/services/lab';
 import fileService from '@/services/file';
-import checkaliveService from '@/services/checkalive';
+import checkcanjudgeService from '@/services/checkcanjudge';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
 import TextInput from '@/components/TextInput';
@@ -106,7 +109,6 @@ export default {
     isShowError: false,
     isShowScore: false,
     errMsg: '',
-    isInCoolDown: false,
   }),
   components: {
     Download,
@@ -136,12 +138,12 @@ export default {
       return this.labs.find((lab) => lab.id === this.selectedId);
     },
     isCanJudge: function() {
-      return this.isFilledUpload && !this.isInCoolDown;
+      return this.isFilledUpload && !this.isJudgeLoading;
     },
   },
   methods: {
     async downloadConfig() {
-      this.isConfigLoading = false;
+      this.isConfigLoading = true;
       try {
         await fileService.downloadFile('/user/config', 'wireguard.zip');
       } catch (err) {
@@ -153,52 +155,45 @@ export default {
     async judge() {
       this.isJudgeLoading = true;
       this.isShowScore = false;
-      this.isInCoolDown = true;
-      setTimeout(() => {
-        this.isInCoolDown = false;
-      }, 10000);
       try {
         const formData = new FormData();
         formData.append('id', this.selectedLab.id);
         this.selectedLab.uploads.forEach((upload) => {
-          formData.append('uploads', upload.file);
+          formData.append(upload.name, upload.file);
         });
         this.selectedLab.inputs.forEach((input) => {
-          formData.append('inputs', input.data);
+          formData.append(input.name, input.data);
         })
         
-        var alive = false
-        try
+        const canjudge = await checkcanjudgeService.canjudge('/judge/canjudge');
+        if (canjudge)
         {
-          alive = await checkaliveService.checkalive('/checkapialive');
-        }
-        catch(err)
-        {
-          alive = false
-        }
-
-        if (alive.data === true) {
           const result = await fileService.uploadFile('/judge', formData);
-          //console.log(result);
-          var stdout = result.data.stdout;
-          var stderr = result.data.stderr;
-          delete result.data['stdout'];
-          delete result.data['stderr'];
-          document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
-          document.getElementById("stdout").innerHTML = stdout;
-          document.getElementById("stderr").innerHTML = stderr;
-          this.score = result.data.score;
-          this.isShowScore = true;
-          if (this.score > this.maxScore) {
-            this.maxScore = this.score;
+          if (result.data.alive === true) {
+            //console.log(result);
+            var stdout = result.data.stdout;
+            var stderr = result.data.stderr;
+            delete result.data['alive'];
+            delete result.data['stdout'];
+            delete result.data['stderr'];
+            document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
+            document.getElementById("stdout").innerHTML = stdout;
+            document.getElementById("stderr").innerHTML = stderr;
+            this.score = result.data.score;
+            this.isShowScore = true;
+            if (this.score > this.maxScore) {
+              this.maxScore = this.score;
+            }
+            setTimeout(() => {
+              this.isShowScore = false;
+            }, 3000);
           }
-          setTimeout(() => {
-            this.isShowScore = false;
-          }, 3000);
-        }
-        else
-        {
-          document.getElementById("result").innerHTML = "Back-end is on maintenance";
+          else
+          {
+            document.getElementById("result").innerHTML = "Back-end is on maintenance";
+          }
+        } else {
+          document.getElementById("result").innerHTML = "You are in judging. Please wait.";
         }
       } catch (err) {
         this.showErrorAlert(err.response.data);
@@ -217,7 +212,7 @@ export default {
     },
     // put the uploaded file into corresponding uploads obj
     onUploadFileChange({ id, file }) {
-      let contentIndex = this.selectedLab.uploads.findIndex(content => content.id === id);
+      let contentIndex = this.selectedLab.uploads.findIndex(content => content.alias === id);
 
       // this.selectedLab.contents[i] cannot trigger watcher
       this.$set(this.selectedLab.uploads, contentIndex, {
@@ -258,6 +253,7 @@ export default {
     this.labs = await labService.getLabs();
     this.selectedId = this.labs[0].id;
     this.maxScore = await labService.getMaxLabScore(this.selectedId);
+    this.isJudgeLoading = !(await checkcanjudgeService.canjudge('/judge/canjudge'));
   },
 }
 </script>

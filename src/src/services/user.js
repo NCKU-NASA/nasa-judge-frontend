@@ -1,8 +1,8 @@
 import axios from '@/plugins/axios.js';
 
-const login = (studentId, password) => {
+const login = (username, password) => {
   return axios.post('/user/login', {
-    studentId,
+    username,
     password
   }).then((res) => {
     return {

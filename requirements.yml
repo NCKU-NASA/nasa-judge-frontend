@@ -1,0 +1,15 @@
+collections:
+  - name: ansible.utils
+  - name: ansible.posix
+    version: 1.4.0
+  - name: community.general
+    version: 6.2.0
+  - name: community.crypto # Only required if you plan to install NGINX Plus
+    version: 2.10.0
+  - name: community.docker # Only required if you plan to use Molecule (see below)
+    version: 3.4.0
+
+roles:
+  - name: jimmy01240397.nodejs
+  - name: jimmy01240397.letsencrypt
+  - name: nginxinc.nginx

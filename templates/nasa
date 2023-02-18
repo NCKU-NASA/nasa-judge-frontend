@@ -1,0 +1,62 @@
+upstream nasabackend {
+    server {{ backendhost }};
+}
+upstream vncproxy {
+    server {{ vncproxyhost }};
+}
+server {
+    listen 443 ssl; # managed by Certbot
+    listen [::]:443 ssl; # managed by Certbot
+    ssl_certificate {{ etc }}/letsencrypt/live/{{ hostname }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key {{ etc }}/letsencrypt/live/{{ hostname }}/privkey.pem; # managed by Certbot
+    include {{ etc }}/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam {{ etc }}/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    server_name {{ hostname }};
+    #server_name _;
+
+    client_max_body_size 100M;
+
+    location / {
+        root {{ webdir }}/dist/;
+        try_files $uri $uri/ @nasabackend;
+    }
+
+    location /vm {
+        proxy_set_header Host $host;
+        proxy_pass http://vncproxy/vm;
+        proxy_http_version 1.1;
+        proxy_read_timeout 3600;
+    }
+
+    location /vm/api/vncwebsocket {
+        proxy_set_header Host $host;
+        proxy_pass http://vncproxy/vm/api/vncwebsocket;
+        proxy_set_header Upgrade $http_upgrade; #WebSocket
+        proxy_set_header Connection "upgrade"; #WebSocket
+        proxy_http_version 1.1;
+        proxy_read_timeout 3600;
+    }
+
+    location /novnc {
+        proxy_set_header Host $host;
+        proxy_pass http://vncproxy/novnc;
+        proxy_http_version 1.1;
+        proxy_read_timeout 3600;
+    }
+
+    location @nasabackend {
+        proxy_set_header Host $host;
+        proxy_pass http://nasabackend;
+        proxy_http_version 1.1;
+        proxy_read_timeout 3600;
+    }
+
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{ hostname }};
+    return 301 https://$host$request_uri;
+}

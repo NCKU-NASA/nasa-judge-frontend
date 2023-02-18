@@ -9,8 +9,8 @@
     </v-alert>
     <form class='login-form'>
       <v-text-field
-        label='Student ID'
-        v-model='studentId'
+        label='User Name'
+        v-model='username'
         @keyup.enter='login'
       ></v-text-field>
       <v-text-field 
@@ -33,14 +33,14 @@ import userService from '@/services/user';
 export default {
   name: 'Login',
   data: () => ({
-    studentId: '',
+    username: '',
     password: '',
     loginError: false,
     message: ''
   }),
   methods: {
     login: async function() {
-      const result = await userService.login(this.studentId, this.password);
+      const result = await userService.login(this.username, this.password);
       switch (result.status) {
         case 200:
           this.loginError = false;

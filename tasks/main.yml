@@ -1,0 +1,27 @@
+- name: Init os var
+  include_vars: "vars/{{ ansible_system | lower }}.yml"
+
+- name: Copy judge frondend directory
+  copy:
+    src: "src/"
+    dest: "{{ webdir }}/"
+  become: true
+
+- name: Install npm package
+  command:
+    cmd: npm install --legacy-peer-deps
+    chdir: "{{ webdir }}"
+  become: true
+
+- name: Build npm
+  command:
+    cmd: npm run build
+    chdir: "{{ webdir }}"
+  become: true
+
+- name: Copy nginx config
+  template:
+    src: "templates/nasa"
+    dest: "{{ nginxdir }}/sites-enabled/nasa"
+  become: true
+  notify: Start nginx

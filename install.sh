@@ -7,6 +7,7 @@ printhelp()
 	echo "Usage: $0 [options]
 Options:
   -h, --help                            display this help message and exit.
+  -hn, --hostname                       hostname.
   -d, --webdir DIR                      dir for fronend.
   -bu, --backendurl URL                 url of backend.
   -vu, --vncproxyurl URL                url of vncproxy.
@@ -25,6 +26,7 @@ gencert()
 
 dirpath=$(dirname "$0")
 
+hostname="localhost"
 webdir="/var/www/nasajudge"
 backendurl="localhost:3000"
 vncproxyurl="localhost:4000"
@@ -46,6 +48,15 @@ do
                 oncerts=false
             fi
             webdir=$1
+            ;;
+        -hn|--hostname)
+            shift
+            if $oncerts
+            then
+                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                oncerts=false
+            fi
+            hostname=$1
             ;;
         -bu|--backendurl)
             shift
@@ -113,7 +124,7 @@ fi
 ansible-galaxy collection install -r $dirpath/requirements.yml -f
 ansible-galaxy role install -r $dirpath/requirements.yml -f
 
-ansible-playbook $dirpath/setup.yml -e "{\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
+ansible-playbook $dirpath/setup.yml -e "{\"hostname\":\"$hostname\",\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
 
 echo ""
 echo ""

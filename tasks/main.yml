@@ -21,7 +21,7 @@
 
 - name: Copy nginx config
   template:
-    src: "templates/nasa"
-    dest: "{{ nginxdir }}/sites-enabled/nasa"
+    src: "templates/nasa.conf"
+    dest: "{{ nginxdir }}/conf.d/nasa.conf"
   become: true
   notify: Start nginx

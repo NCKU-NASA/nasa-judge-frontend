@@ -26,7 +26,7 @@ gencert()
 
 dirpath=$(dirname "$0")
 
-hostname="localhost"
+hostname=""
 webdir="/var/www/nasajudge"
 backendurl="localhost:3000"
 vncproxyurl="localhost:4000"
@@ -119,6 +119,11 @@ if $oncerts
 then
     certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
     oncerts=false
+fi
+
+if [ "$hostname" == "" ]
+then
+    printhelp
 fi
 
 ansible-galaxy collection install -r $dirpath/requirements.yml -f

@@ -35,9 +35,15 @@
           :loading="isConfigLoading"
           :disabled="isConfigLoading"
           @click="downloadConfig"
-          :dark="!isConfigLoading"
       >
         Download Config
+      </v-btn>
+      <v-btn
+          :loading="isDescriptionLoading"
+          :disabled="isDescriptionLoading"
+          @click="downloadDescription"
+      >
+        Description
       </v-btn>
       <v-btn
           :loading="isJudgeLoading"
@@ -106,6 +112,7 @@ export default {
     isFilledUpload: false,
     isJudgeLoading: false,
     isConfigLoading: false,
+    isDescriptionLoading: false,
     isShowError: false,
     isShowScore: false,
     errMsg: '',
@@ -145,11 +152,21 @@ export default {
     async downloadConfig() {
       this.isConfigLoading = true;
       try {
-        await fileService.downloadFile('/user/config', 'wireguard.zip');
+        await fileService.downloadFile('/user/config', 'userconfig.zip');
       } catch (err) {
         this.showErrorAlert(err.response.statusText);
       } finally {
         this.isConfigLoading = false;
+      }
+    },
+    async downloadDescription() {
+      this.isDescriptionLoading = true;
+      try {
+        await fileService.downloadFile(`/${this.selectedLab.id}/download/description`, 'Description.pdf');
+      } catch (err) {
+        this.showErrorAlert(err.response.statusText);
+      } finally {
+        this.isDescriptionLoading = false;
       }
     },
     async judge() {

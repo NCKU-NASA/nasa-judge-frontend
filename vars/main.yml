@@ -1,2 +1,1 @@
----
-# vars file for nasa-judge-api
+tmpdir: /tmp/judgetmp

@@ -8,6 +8,7 @@ printhelp()
 Options:
   -h, --help                            display this help message and exit.
   -hn, --hostname                       hostname.
+  -f, --fastmode                        build only.
   -d, --webdir DIR                      dir for fronend.
   -bu, --backendurl URL                 url of backend.
   -vu, --vncproxyurl URL                url of vncproxy.
@@ -33,6 +34,7 @@ vncproxyurl="localhost:4000"
 emails="[]"
 certs="[]"
 oncerts=false
+fastmode=false
 
 while [ "$1" != "" ]
 do
@@ -48,6 +50,14 @@ do
                 oncerts=false
             fi
             webdir=$1
+            ;;
+        -f|--fastmode)
+            if $oncerts
+            then
+                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                oncerts=false
+            fi
+            fastmode=true
             ;;
         -hn|--hostname)
             shift
@@ -126,10 +136,14 @@ then
     printhelp
 fi
 
-ansible-galaxy collection install -r $dirpath/requirements.yml -f
-ansible-galaxy role install -r $dirpath/requirements.yml -f
-
-ansible-playbook $dirpath/setup.yml -e "{\"hostname\":\"$hostname\",\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
+if $fastmode
+then
+    ansible-playbook $dirpath/setupfastmode.yml -e "{\"hostname\":\"$hostname\",\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
+else
+    ansible-galaxy collection install -r $dirpath/requirements.yml -f
+    ansible-galaxy role install -r $dirpath/requirements.yml -f
+    ansible-playbook $dirpath/setup.yml -e "{\"hostname\":\"$hostname\",\"webdir\":\"$webdir\",\"backendurl\":\"$backendurl\",\"vncproxyurl\":\"$vncproxyurl\",\"emails\":$emails, \"certs\":$certs}"
+fi
 
 echo ""
 echo ""

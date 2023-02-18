@@ -4,24 +4,44 @@
 - name: Copy judge frondend directory
   copy:
     src: "src/"
-    dest: "{{ webdir }}/"
+    dest: "{{ tmpdir }}"
   become: true
 
 - name: Install npm package
   command:
     cmd: npm install --legacy-peer-deps
-    chdir: "{{ webdir }}"
+    chdir: "{{ tmpdir }}"
   become: true
 
 - name: Build npm
   command:
     cmd: npm run build
-    chdir: "{{ webdir }}"
+    chdir: "{{ tmpdir }}"
   become: true
+
+- name: Copy dist to webdir
+  copy:
+    remote_src: true
+    src: "{{ tmpdir }}/dist/"
+    dest: "{{ webdir }}"
+  become: true
+
+- name: Remove tmp
+  file: 
+    state: absent
+    path: "{{ tmpdir }}"
+  ignore_errors: true
+
+- name: Check nginx config exist
+  stat:
+    path: "{{ nginxdir }}/conf.d/nasa.conf"
+  become: true
+  register: config
 
 - name: Copy nginx config
   template:
     src: "templates/nasa.conf"
     dest: "{{ nginxdir }}/conf.d/nasa.conf"
+  when: not config.stat.exists
   become: true
   notify: Start nginx

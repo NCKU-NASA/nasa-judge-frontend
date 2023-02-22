@@ -32,6 +32,20 @@
     path: "{{ tmpdir }}"
   ignore_errors: true
 
+- name: Check letsencrypt config exist
+  stat:
+    path: "/etc/letsencrypt/options-ssl-nginx.conf"
+  become: true
+  register: config
+
+- name: Copy letsencrypt config
+  template:
+    src: "templates/options-ssl-nginx.conf"
+    dest: "/etc/letsencrypt/options-ssl-nginx.conf"
+  when: not config.stat.exists
+  become: true
+  notify: Start nginx
+
 - name: Check nginx config exist
   stat:
     path: "{{ nginxdir }}/conf.d/nasa.conf"

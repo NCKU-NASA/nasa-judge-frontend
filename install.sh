@@ -21,8 +21,8 @@ Options:
 
 gencert()
 {
-    output=$(echo "{}" | jq -c ".cn = \"$cn\"")
-    echo "$output" | jq -c ".domains = $(echo "\"$domains\"" | jq -c 'split(",")')"
+    output=$(echo "{}" | jq -c ".cn = \"$1\"")
+    echo "$output" | jq -c ".domains = $2"
 }
 
 dirpath=$(dirname "$0")
@@ -46,7 +46,7 @@ do
             shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             webdir=$1
@@ -54,7 +54,7 @@ do
         -f|--fastmode)
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             fastmode=true
@@ -63,7 +63,7 @@ do
             shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             hostname=$1
@@ -72,7 +72,7 @@ do
             shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             backendurl=$1
@@ -81,7 +81,7 @@ do
             shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             vncproxyurl=$1
@@ -90,20 +90,19 @@ do
             shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
             emails=$(echo "\"$1\"" | jq -c 'split(",")')
             #emails=$(echo $emails | jq -c ". + [\"$1\"]")
             ;;
         -c|--cert)
-            shift
             if $oncerts
             then
-                certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+                certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
                 oncerts=false
             fi
-            oncert=true
+            oncerts=true
             domains="[]"
             cn=""
             ;;
@@ -127,7 +126,7 @@ done
 
 if $oncerts
 then
-    certs=$(echo "$certs" | jq -c ". + [$(gencert)]")
+    certs=$(echo "$certs" | jq -c ". + [$(gencert "$cn" "$domains")]")
     oncerts=false
 fi
 

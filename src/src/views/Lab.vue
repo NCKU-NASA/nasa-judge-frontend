@@ -162,7 +162,7 @@ export default {
     async downloadDescription() {
       this.isDescriptionLoading = true;
       try {
-        await fileService.downloadFile(`/${this.selectedLab.id}/download/description`, 'Description.pdf');
+        await fileService.downloadFile(`/labs/${this.selectedLab.id}/download/description`, 'Description.pdf');
       } catch (err) {
         this.showErrorAlert(err.response.statusText);
       } finally {

@@ -17,6 +17,26 @@ const login = (username, password) => {
   });
 }
 
+const signup = (username, password, email, studentId) => {
+  return axios.post('/user/add', {
+    username,
+    password,
+    email,
+    studentId
+  }).then((res) => {
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  }).catch((err) => {
+    return {
+      status: err.response.status,
+      data: err.response.data,
+    };
+  });
+}
+
 export default {
   login,
+  signup,
 }

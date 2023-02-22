@@ -13,7 +13,7 @@
     <v-card-text>
       <v-text-field v-for="(input) in textInputs"
           :key="input.name"
-          :placeholder="input.text"
+          :placeholder="input.alias"
           @change="onInputChange($event, input.name)"
           truncate-length="70"
       />

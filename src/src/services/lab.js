@@ -8,7 +8,7 @@ function getLabs() {
 }
 
 function getMaxLabScore(labId) {
-  return axios.get(`/labs/${labId}/score`)
+  return axios.get(`/score/${labId}`)
     .then((res) => res.data.score);
 }
 
@@ -16,31 +16,25 @@ function processLabsRes(res) {
 
   return res.map(lab => {
     let downloads = [];
+    let uploads = [];
+    let inputs = [];
     lab.contents.forEach(content => {
+      const { type, ...Obj  } = content;
+      if(Obj.alias === undefined) Obj.alias = Obj.name;
       if (content.type === 'download') {
         // eslint-disable-next-line no-unused-vars
-        const { type, ...downloadObj  } = content;
-        downloads.push(downloadObj);
+        downloads.push(Obj);
+      }
+      if (content.type === 'upload') {
+        // eslint-disable-next-line no-unused-vars
+        uploads.push(Obj);
+      }
+      if (content.type === 'input') {
+        // eslint-disable-next-line no-unused-vars
+        inputs.push(Obj);
       }
     });
 
-    let uploads = [];
-    lab.contents.forEach(content => {
-      if (content.type === 'upload') {
-        // eslint-disable-next-line no-unused-vars
-        const { type, ...uploadObj  } = content;
-        uploads.push(uploadObj);
-      }
-    });
-    
-    let inputs = [];
-    lab.contents.forEach(content => {
-      if (content.type === 'input') {
-        // eslint-disable-next-line no-unused-vars
-        const { type, ...inputObj  } = content;
-        inputs.push(inputObj);
-      }
-    });
     return {
       id: lab.id,
       downloads,

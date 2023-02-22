@@ -12,9 +12,9 @@
     </v-card-title>
     <v-card-text>
       <v-file-input v-for="(file) in uploads"
-          :key="file.id"
-          :placeholder="file.text"
-          @change="onFilePicked($event, file.id)"
+          :key="file.alias"
+          :placeholder="file.name"
+          @change="onFilePicked($event, file.alias)"
           truncate-length="70"
       />
     </v-card-text>

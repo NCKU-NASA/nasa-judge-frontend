@@ -1,6 +1,6 @@
 import axios from '@/plugins/axios.js';
 
-function checkalive(uri) {
+function canjudge(uri) {
   try
   {
     return axios.get(uri);
@@ -11,5 +11,5 @@ function checkalive(uri) {
 }
 
 export default {
-  checkalive,
+    canjudge,
 }

@@ -1,0 +1,9 @@
+hostname: localhost
+webdir: /var/www/nasajudge
+backendurl: localhost:3000
+vncproxyurl: localhost:4000
+emails: 
+- aaa@example.com
+certs:
+- cn: example.com
+  domains: []

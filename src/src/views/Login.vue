@@ -87,7 +87,7 @@
               <v-btn
                 @click='signup'
               >
-                Login
+                SignUp
               </v-btn>
             </form>
           </div>

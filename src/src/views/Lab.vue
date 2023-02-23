@@ -183,7 +183,7 @@ export default {
         })
         
         const canjudge = await checkcanjudgeService.canjudge('/judge/canjudge');
-        if (canjudge)
+        if (canjudge.data)
         {
           const result = await fileService.uploadFile('/judge', formData);
           if (result.data.alive === true) {
@@ -207,7 +207,7 @@ export default {
           }
           else
           {
-            document.getElementById("result").innerHTML = "Back-end is on maintenance";
+            document.getElementById("result").innerHTML = "There have some error. Please try again later.";
           }
         } else {
           document.getElementById("result").innerHTML = "You are in judging. Please wait.";

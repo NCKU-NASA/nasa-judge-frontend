@@ -1,5 +1,10 @@
 import axios from '@/plugins/axios.js';
 
+const getuser = () => {
+  return axios.get('/user');
+}
+
+
 const login = (username, password) => {
   return axios.post('/user/login', {
     username,
@@ -37,6 +42,7 @@ const signup = (username, password, email, studentId) => {
 }
 
 export default {
+  getuser,
   login,
   signup,
 }

@@ -4,13 +4,20 @@
         id="instruction"
         elevation="3"
         text
+    >
+      Hi! {{ username }}
+    </v-alert>
+    <v-alert
+        id="instruction"
+        elevation="3"
+        text
         type="info"
     >
       <ol>
         <li>Click <strong>Download Config</strong> for the config file (same for every lab)</li>
         <li>Select the lab you want to submit</li>
         <li>Upload / Download required files</li>
-        <li>Click the <strong>Judge</strong> button <strong>(10s cooldown)</strong></li>
+        <li>Click the <strong>Judge</strong> button <strong>(A user can only judge once in the same time)</strong></li>
         <li>Good luck! :)</li>
       </ol>
     </v-alert>
@@ -96,6 +103,7 @@
 <script>
 import labService from '@/services/lab';
 import fileService from '@/services/file';
+import userService from '@/services/user';
 import checkcanjudgeService from '@/services/checkcanjudge';
 import Download from '@/components/Download';
 import Upload from '@/components/Upload';
@@ -109,6 +117,7 @@ export default {
     selectedId: -1,
     score: 0,
     maxScore: 0,
+    username: "",
     isFilledUpload: false,
     isJudgeLoading: false,
     isConfigLoading: false,
@@ -271,6 +280,7 @@ export default {
     this.selectedId = this.labs[0].id;
     this.maxScore = await labService.getMaxLabScore(this.selectedId);
     this.isJudgeLoading = !(await checkcanjudgeService.canjudge('/judge/canjudge'));
+    this.username = (await userService.getuser()).data.user;
   },
 }
 </script>
@@ -306,7 +316,7 @@ export default {
   }
 
   #instruction {
-    width: 600px;
+    width: 650px;
     margin-bottom: 40px;
     .info--text {
       align-self: center;

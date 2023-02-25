@@ -216,13 +216,13 @@ export default {
           }
           else
           {
-            document.getElementById("result").innerHTML = "There have some error. Please try again later.";
+            this.showErrorAlert("You are in judging. Please wait.");
           }
         } else {
-          document.getElementById("result").innerHTML = "You are in judging. Please wait.";
+          this.showErrorAlert("You are in judging. Please wait.");
         }
       } catch (err) {
-        this.showErrorAlert(err.response.data);
+        this.showErrorAlert("There have some error. Please try again later.");
       } finally {
         this.isJudgeLoading = false;
       }
@@ -277,9 +277,11 @@ export default {
   },
   async beforeMount() {
     this.labs = await labService.getLabs();
-    this.selectedId = this.labs[0].id;
-    this.maxScore = await labService.getMaxLabScore(this.selectedId);
-    this.isJudgeLoading = !(await checkcanjudgeService.canjudge('/judge/canjudge'));
+    if(this.labs.length > 0) 
+    {
+        this.selectedId = this.labs[0].id;
+        this.maxScore = await labService.getMaxLabScore(this.selectedId);
+    }
     this.username = (await userService.getuser()).data.user;
   },
 }

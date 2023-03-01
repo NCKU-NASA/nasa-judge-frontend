@@ -5,7 +5,8 @@
         elevation="3"
         text
     >
-      Hi! {{ username }}
+      <p>Hi! {{ userdata.username }}</p>
+      <p>studentId: {{ userdata.studentId }}</p>
     </v-alert>
     <v-alert
         id="instruction"
@@ -117,7 +118,7 @@ export default {
     selectedId: -1,
     score: 0,
     maxScore: 0,
-    username: "",
+    userdata: {},
     isFilledUpload: false,
     isJudgeLoading: false,
     isConfigLoading: false,
@@ -282,7 +283,7 @@ export default {
         this.selectedId = this.labs[0].id;
         this.maxScore = await labService.getMaxLabScore(this.selectedId);
     }
-    this.username = (await userService.getuser()).data.user;
+    this.userdata = (await userService.getuser()).data;
   },
 }
 </script>

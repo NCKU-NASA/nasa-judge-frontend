@@ -63,7 +63,8 @@
         Judge
       </v-btn>
       <div class="ml-9 black--text">
-        Current Highest Score: {{ maxScore }}
+        <p>Current Highest Score: {{ scoreData.score }}</p>
+        <p>Pass rate: {{ scoreData.docount !== 0 ? Math.round(scoreData.passcount / scoreData.docount * 10000) / 100 : 0 }}% ({{ scoreData.passcount }}/{{ scoreData.docount }})</p>
       </div>
       <div v-show="isShowScore" class="ml-9 red--text">
         Score: {{ score }}
@@ -117,7 +118,7 @@ export default {
     labs: [],
     selectedId: -1,
     score: 0,
-    maxScore: 0,
+    scoreData: 0,
     userdata: {},
     isFilledUpload: false,
     isJudgeLoading: false,
@@ -137,18 +138,6 @@ export default {
       return this.labs.map((lab) => lab.id);
     },
     selectedLab: function() {
-      if(document.getElementById("result") != null)
-      {
-        document.getElementById("result").innerHTML = "";
-      }
-      if(document.getElementById("stdout") != null)
-      {
-        document.getElementById("stdout").innerHTML = "";
-      }
-      if(document.getElementById("stderr") != null)
-      {
-        document.getElementById("stderr").innerHTML = "";
-      }
       if (this.selectedId < 0) {
         return [];
       }
@@ -208,9 +197,7 @@ export default {
             document.getElementById("stderr").innerHTML = stderr;
             this.score = result.data.score;
             this.isShowScore = true;
-            if (this.score > this.maxScore) {
-              this.maxScore = this.score;
-            }
+            this.scoreData = await labService.getLabScoreData(this.selectedLab.id);
             setTimeout(() => {
               this.isShowScore = false;
             }, 3000);
@@ -272,16 +259,40 @@ export default {
     },
     selectedId: {
       handler: async function() {
-        this.maxScore = await labService.getMaxLabScore(this.selectedId);
+        if(document.getElementById("result") != null)
+        {
+          document.getElementById("result").innerHTML = "";
+        }
+        if(document.getElementById("stdout") != null)
+        {
+          document.getElementById("stdout").innerHTML = "";
+        }
+        if(document.getElementById("stderr") != null)
+        {
+          document.getElementById("stderr").innerHTML = "";
+        }
+        this.scoreData = await labService.getLabScoreData(this.selectedId);
       },
     },
   },
   async beforeMount() {
     this.labs = await labService.getLabs();
+    if(document.getElementById("result") != null)
+    {
+      document.getElementById("result").innerHTML = "";
+    }
+    if(document.getElementById("stdout") != null)
+    {
+      document.getElementById("stdout").innerHTML = "";
+    }
+    if(document.getElementById("stderr") != null)
+    {
+      document.getElementById("stderr").innerHTML = "";
+    }
     if(this.labs.length > 0) 
     {
         this.selectedId = this.labs[0].id;
-        this.maxScore = await labService.getMaxLabScore(this.selectedId);
+        this.scoreData = await labService.getLabScoreData(this.selectedId);
     }
     this.userdata = (await userService.getuser()).data;
   },

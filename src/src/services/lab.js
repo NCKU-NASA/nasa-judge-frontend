@@ -12,6 +12,11 @@ function getLabScoreData(labId) {
     .then((res) => res.data);
 }
 
+function getLabChart(labId) {
+  return axios.get(`/labs/${labId}/chart`)
+    .then((res) => res.data);
+}
+
 function processLabsRes(res) {
 
   return res.map(lab => {
@@ -47,4 +52,5 @@ function processLabsRes(res) {
 export default {
   getLabs,
   getLabScoreData,
+  getLabChart,
 }

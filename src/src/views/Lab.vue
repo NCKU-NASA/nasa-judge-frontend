@@ -70,6 +70,9 @@
         Score: {{ score }}
       </div>
     </div>
+    <div>
+      <img :src="charturl" align='left'/>
+    </div>
     <div class="file-ops">
       <div v-if="isNotEmpty(selectedLab.downloads)">
         <Download
@@ -90,7 +93,9 @@
           @input-changed="onInputChange"
         />
       </div>
-      <div class=resultdiv>
+    </div>
+    <div class="resultdiv">
+      <div>
         <p style="text-align:left;">results: </p>
         <textarea class="result" readonly name="" id="result" cols="30" rows="10"></textarea>
         <p style="text-align:left;">stdout: </p>
@@ -111,7 +116,6 @@ import Download from '@/components/Download';
 import Upload from '@/components/Upload';
 import TextInput from '@/components/TextInput';
 import { isEmpty, isNotEmpty } from '@/helpers/helper';
-
 export default {
   name: 'Lab',
   data: () => ({
@@ -127,12 +131,14 @@ export default {
     isShowError: false,
     isShowScore: false,
     errMsg: '',
+    charturl: ""
   }),
   components: {
     Download,
     Upload,
     TextInput
   },
+
   computed: {
     labIds: function() {
       return this.labs.map((lab) => lab.id);
@@ -259,19 +265,8 @@ export default {
     },
     selectedId: {
       handler: async function() {
-        if(document.getElementById("result") != null)
-        {
-          document.getElementById("result").innerHTML = "";
-        }
-        if(document.getElementById("stdout") != null)
-        {
-          document.getElementById("stdout").innerHTML = "";
-        }
-        if(document.getElementById("stderr") != null)
-        {
-          document.getElementById("stderr").innerHTML = "";
-        }
         this.scoreData = await labService.getLabScoreData(this.selectedId);
+        this.charturl = await labService.getLabChart(this.selectedId);
       },
     },
   },
@@ -293,6 +288,7 @@ export default {
     {
         this.selectedId = this.labs[0].id;
         this.scoreData = await labService.getLabScoreData(this.selectedId);
+        this.charturl = await labService.getLabChart(this.selectedId);
     }
     this.userdata = (await userService.getuser()).data;
   },

@@ -2,9 +2,12 @@
   include_vars: "vars/{{ ansible_system | lower }}.yml"
 
 - name: Copy judge frondend directory
-  copy:
+  synchronize:
     src: "src/"
     dest: "{{ tmpdir }}"
+    rsync_opts:
+    - "--exclude=node_modules"
+    - "--exclude=dist"
   become: true
 
 - name: Install npm package

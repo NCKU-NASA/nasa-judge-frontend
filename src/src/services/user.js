@@ -41,8 +41,47 @@ const signup = (username, password, email, studentId) => {
   });
 }
 
+const forgetpasswd = (email) => {
+  return axios.post('/user/forgetpasswd', {
+    email
+  }).then((res) => {
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  }).catch((err) => {
+    return {
+      status: err.response.status,
+      data: err.response.data,
+    };
+  });
+}
+
+const chpasswd = (password) => {
+  return axios.post('/user/chpasswd', {
+    password
+  }).then((res) => {
+    return {
+      status: res.status,
+      data: res.data,
+    };
+  }).catch((err) => {
+    return {
+      status: err.response.status,
+      data: err.response.data,
+    };
+  });
+}
+
+const checkcanchpasswd = () => {
+  return axios.get('/user/checkcanchpasswd');
+}
+
 export default {
   getuser,
   login,
   signup,
+  forgetpasswd,
+  chpasswd,
+  checkcanchpasswd,
 }

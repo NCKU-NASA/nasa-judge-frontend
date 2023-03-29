@@ -9,6 +9,7 @@
       >
         <v-tab :key="signin">Sign In</v-tab>
         <v-tab :key="signup">Sign Up</v-tab>
+        <v-tab :key="passwd">Forget Password</v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
         <v-tab-item :key="signin">
@@ -92,6 +93,36 @@
             </form>
           </div>
         </v-tab-item>
+        <v-tab-item :key="passwd">
+          <div class='login-div'>
+            <v-alert
+              color='red'
+              type='error'
+              :value='passwdError'
+            >
+              {{ message }}
+            </v-alert>
+            <v-alert
+              color='green'
+              type='success'
+              :value='passwdSuccess'
+            >
+              {{ message }}
+            </v-alert>
+            <form class='login-form'>
+              <v-text-field
+                label='E-mail'
+                v-model='email'
+                @keyup.enter='passwd'
+              ></v-text-field>
+              <v-btn
+                @click='passwd'
+              >
+                Send
+              </v-btn>
+            </form>
+          </div>
+        </v-tab-item>
       </v-tabs-items>
     </v-card>
   </div>
@@ -111,6 +142,8 @@ export default {
     loginError: false,
     signupError: false,
     signupSuccess: false,
+    passwdError: false,
+    passwdSuccess: false,
     message: ''
   }),
   methods: {
@@ -143,6 +176,20 @@ export default {
         default:
           this.signupError = true;
           this.signupSuccess = false;
+          this.message = result.data;
+      }
+    },
+    passwd: async function() {
+      const result = await userService.forgetpasswd(this.email);
+      switch (result.status) {
+        case 200:
+          this.passwdError = false;
+          this.passwdSuccess = true;
+          this.message = "Confirmation mail sent. Please check your email.";
+          break;
+        default:
+          this.passwdError = true;
+          this.passwdSuccess = false;
           this.message = result.data;
       }
     }

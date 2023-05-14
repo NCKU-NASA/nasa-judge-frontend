@@ -1,7 +1,11 @@
 import axios from '@/plugins/axios.js';
 
-function downloadFile(uri, filename) {
+function downloadFile(uri, username, token, filename) {
   return axios.get(uri, {
+    params: {
+        username,
+        token,
+    },
     responseType: 'blob',
   }).then((res) => {
     const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -13,6 +17,10 @@ function downloadFile(uri, filename) {
   });
 }
 
+function getFileToken(data) {
+  return axios.post('/user/token', {data});  
+}
+
 function uploadFile(uri, data) {
   return axios.post(uri, data, {
     timeout: 0,
@@ -22,5 +30,6 @@ function uploadFile(uri, data) {
 
 export default {
   downloadFile,
+  getFileToken,
   uploadFile,
 }

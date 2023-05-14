@@ -157,8 +157,11 @@ export default {
     async downloadConfig() {
       this.isConfigLoading = true;
       try {
-        await fileService.downloadFile('/user/config', 'userconfig.zip');
+        const token = (await fileService.getFileToken('userconfig')).data;
+        await navigator.clipboard.writeText(`${document.URL.split('#')[0]}user/config?username=${this.userdata.username}&token=${encodeURIComponent(token)}`);
+        await fileService.downloadFile('/user/config', this.userdata.username, token, 'userconfig.zip');
       } catch (err) {
+        console.log(err);
         this.showErrorAlert(err.response.statusText);
       } finally {
         this.isConfigLoading = false;
@@ -167,7 +170,9 @@ export default {
     async downloadDescription() {
       this.isDescriptionLoading = true;
       try {
-        await fileService.downloadFile(`/labs/${this.selectedLab.id}/download/description`, 'Description.pdf');
+        const token = (await fileService.getFileToken(`${this.selectedLab.id}/description`)).data;
+        await navigator.clipboard.writeText(`${document.URL.split('#')[0]}labs/${this.selectedLab.id}/download/description?username=${this.userdata.username}&token=${encodeURIComponent(token)}`);
+        await fileService.downloadFile(`/labs/${this.selectedLab.id}/download/description`, this.userdata.username, token, 'Description.pdf');
       } catch (err) {
         this.showErrorAlert(err.response.statusText);
       } finally {

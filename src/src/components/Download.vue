@@ -27,6 +27,7 @@
 <script>
 import { mdiCloudDownloadOutline } from '@mdi/js';
 import fileService from '@/services/file';
+import userService from '@/services/user';
 
 export default {
   name: 'DownloadOps',
@@ -40,7 +41,10 @@ export default {
   methods: {
     async downloadFile(lab, filename) {
       try {
-        await fileService.downloadFile(`/labs/${lab}/download`, filename);
+        const token = (await fileService.getFileToken(`${lab}/${filename}`)).data;
+        const userdata = (await userService.getuser()).data;
+        await navigator.clipboard.writeText(`${document.URL.split('#')[0]}labs/${lab}/download/${filename}?username=${userdata.username}&token=${encodeURIComponent(token)}`);
+        await fileService.downloadFile(`/labs/${lab}/download/${filename}`, userdata.username, token, filename);
       } catch(err) {
         this.$emit('request-error', err.response.statusText);
       }

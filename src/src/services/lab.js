@@ -20,12 +20,17 @@ function getLabChart(labId) {
 function processLabsRes(res) {
 
   return res.map(lab => {
+    let vms = [];
     let downloads = [];
     let uploads = [];
     let inputs = [];
     lab.contents.forEach(content => {
       const { type, ...Obj  } = content;
       if(Obj.alias === undefined) Obj.alias = Obj.name;
+      if (content.type === 'vm') {
+        // eslint-disable-next-line no-unused-vars
+        vms.push(Obj);
+      }
       if (content.type === 'download') {
         // eslint-disable-next-line no-unused-vars
         downloads.push(Obj);
@@ -42,6 +47,7 @@ function processLabsRes(res) {
 
     return {
       id: lab.id,
+      vms,
       downloads,
       uploads,
       inputs,

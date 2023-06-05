@@ -74,6 +74,11 @@
       <img :src="charturl" align='left'/>
     </div>
     <div class="file-ops">
+      <div v-if="isNotEmpty(selectedLab.vms)">
+        <VM
+          :vms="selectedLab.vms"
+        />
+      </div>
       <div v-if="isNotEmpty(selectedLab.downloads)">
         <Download
           :downloads="selectedLab.downloads"
@@ -113,6 +118,7 @@ import fileService from '@/services/file';
 import userService from '@/services/user';
 import checkcanjudgeService from '@/services/checkcanjudge';
 import Download from '@/components/Download';
+import VM from '@/components/VM';
 import Upload from '@/components/Upload';
 import TextInput from '@/components/TextInput';
 import { isEmpty, isNotEmpty } from '@/helpers/helper';
@@ -135,6 +141,7 @@ export default {
   }),
   components: {
     Download,
+    VM,
     Upload,
     TextInput
   },

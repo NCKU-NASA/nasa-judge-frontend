@@ -152,7 +152,7 @@ export default {
       switch (result.status) {
         case 200:
           this.loginError = false;
-          this.$router.push('/lab');
+          this.$router.push('/');
           break;
         default:
           this.loginError = true;

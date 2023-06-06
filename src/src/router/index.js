@@ -9,22 +9,27 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/lab',
     name: 'Lab',
     component: Lab
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/passwd',
     name: 'Passwd',
     component: Passwd
+  },
+  {
+    path: '*',
+    redirect: '/',
   }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 

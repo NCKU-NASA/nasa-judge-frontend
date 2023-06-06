@@ -31,7 +31,7 @@ instance.interceptors.response.use(response => {
     error.response = { data: 'Network Error' };
   }
   if (error.response.status === 401) {
-    router.push('/');
+    router.push('/login');
   }
   // reject if the error is not caused at server side
   if (error.response.status !== 500) {

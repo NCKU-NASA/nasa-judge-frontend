@@ -71,7 +71,14 @@
       </div>
     </div>
     <div>
-      <img :src="charturl" align='left'/>
+      <iframe :src="charturl" 
+              frameborder="0" 
+              :width="chartwidth" 
+              :height="chartheight"
+              scrolling="no"
+      >
+      </iframe>
+      <!--img :src="charturl" align='left'/-->
     </div>
     <div class="file-ops">
       <div v-if="isNotEmpty(selectedLab.vms)">
@@ -137,7 +144,10 @@ export default {
     isShowError: false,
     isShowScore: false,
     errMsg: '',
-    charturl: ""
+    charturl: "",
+    chartdata: "",
+    chartwidth: "",
+    chartheight: ""
   }),
   components: {
     Download,
@@ -203,35 +213,38 @@ export default {
         if (canjudge.data)
         {
           const result = await fileService.uploadFile('/judge', formData);
-          if (result.data.alive === true) {
-            //console.log(result);
-            var stdout = result.data.stdout;
-            var stderr = result.data.stderr;
-            delete result.data['alive'];
-            delete result.data['stdout'];
-            delete result.data['stderr'];
-            document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
-            document.getElementById("stdout").innerHTML = stdout;
-            document.getElementById("stderr").innerHTML = stderr;
-            this.score = result.data.score;
-            this.isShowScore = true;
-            this.scoreData = await labService.getLabScoreData(this.selectedLab.id);
-            setTimeout(() => {
-              this.isShowScore = false;
-            }, 3000);
-          }
-          else
-          {
-            this.showErrorAlert("You are in judging. Please wait.");
-          }
+          var stdout = result.data.stdout;
+          var stderr = result.data.stderr;
+          delete result.data['stdout'];
+          delete result.data['stderr'];
+          document.getElementById("result").innerHTML = JSON.stringify(result.data, undefined, 4);
+          document.getElementById("stdout").innerHTML = stdout;
+          document.getElementById("stderr").innerHTML = stderr;
+          this.score = result.data.score;
+          this.isShowScore = true;
+          this.scoreData = await labService.getLabScoreData(this.selectedLab.id);
+          this.reloadChart();
+          setTimeout(() => {
+            this.isShowScore = false;
+          }, 3000);
         } else {
           this.showErrorAlert("You are in judging. Please wait.");
         }
       } catch (err) {
-        this.showErrorAlert("There have some error. Please try again later.");
+        if (err.response.status === 429) {
+          this.showErrorAlert("You are in judging. Please wait.");
+        } else {
+          this.showErrorAlert("There have some error. Please try again later.");
+        }
       } finally {
         this.isJudgeLoading = false;
       }
+    },
+    async reloadChart() {
+        this.charturl = `/labs/${this.selectedId}/chart`;
+        this.chartdata = await labService.getLabChart(this.selectedId);
+        this.chartwidth = /width:(.*?);/.exec(this.chartdata)[1]
+        this.chartheight = /height:(.*?);/.exec(this.chartdata)[1]
     },
     showErrorAlert(errMsg) {
       if (!this.isShowError) {
@@ -278,7 +291,7 @@ export default {
     selectedId: {
       handler: async function() {
         this.scoreData = await labService.getLabScoreData(this.selectedId);
-        this.charturl = await labService.getLabChart(this.selectedId);
+        this.reloadChart();
       },
     },
   },

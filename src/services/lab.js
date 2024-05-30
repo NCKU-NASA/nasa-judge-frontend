@@ -27,26 +27,26 @@ function processLabsRes(res) {
     lab.contents.forEach(content => {
       const { type, ...Obj  } = content;
       if(Obj.alias === undefined) Obj.alias = Obj.name;
-      if (content.type === 'vm') {
+      if (content.type.toLowerCase() === 'vm') {
         // eslint-disable-next-line no-unused-vars
         vms.push(Obj);
       }
-      if (content.type === 'download') {
+      if (content.type.toLowerCase() === 'download') {
         // eslint-disable-next-line no-unused-vars
         downloads.push(Obj);
       }
-      if (content.type === 'upload') {
+      if (content.type.toLowerCase() === 'upload') {
         // eslint-disable-next-line no-unused-vars
         uploads.push(Obj);
       }
-      if (content.type === 'input') {
+      if (content.type.toLowerCase() === 'input') {
         // eslint-disable-next-line no-unused-vars
         inputs.push(Obj);
       }
     });
 
     return {
-      id: lab.id,
+      id: lab.labId,
       vms,
       downloads,
       uploads,

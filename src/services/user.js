@@ -42,7 +42,7 @@ const signup = (username, password, email, studentId) => {
 }
 
 const forgetpasswd = (email) => {
-  return axios.post('/user/forgetpasswd', {
+  return axios.post('/user/passwd/forget', {
     email
   }).then((res) => {
     return {
@@ -58,7 +58,7 @@ const forgetpasswd = (email) => {
 }
 
 const chpasswd = (password) => {
-  return axios.post('/user/chpasswd', {
+  return axios.post('/user/passwd/change', {
     password
   }).then((res) => {
     return {
@@ -74,7 +74,7 @@ const chpasswd = (password) => {
 }
 
 const checkcanchpasswd = () => {
-  return axios.get('/user/checkcanchpasswd');
+  return axios.get('/user/passwd/check');
 }
 
 export default {
